@@ -80,6 +80,10 @@ Pour compléter le catalogue ou trouver d'autres textes du domaine public :
 * [Gallica (BnF)](https://gallica.bnf.fr) donne accès aux éditions originales numérisées. C’est idéal pour la médiation, par exemple pour montrer la première édition de *Madame Bovary*.
 * [Bibebook](https://www.bibebook.com) et [Project Gutenberg](https://www.gutenberg.org/browse/languages/fr) sont deux bons compléments.
 * [Littérature audio](https://www.litteratureaudio.com) propose des versions lues gratuitement, utiles pour l’accessibilité.
+* [Bibliothèque électronique du Québec](https://beq.ebooksgratuits.com) propose environ 2 800 volumes en EPUB, PDF (dont une version pour liseuses) et MOBI.
+  ⚠️ Elle suit le droit canadien, où une œuvre devenait libre 50 ans après la mort de l'auteur (70 ans en France) :
+  **vérifiez que l'auteur est mort avant 1956**. Aucune licence de redistribution n'est affichée : à utiliser
+  pour la lecture, et à ne pas ajouter au dépôt sans l'accord du site.
 
 Avant d'ajouter au dépôt un EPUB venant d'un autre site que Wikisource, vérifiez sa
 licence : certains sites autorisent la redistribution seulement sans modification
