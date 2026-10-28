@@ -123,6 +123,27 @@
   .ejecter ol { margin: 0; padding-left: 22px; } .ejecter li { margin: 6px 0; }
 
   .cache { display: none !important; }
+
+  /* Fenêtre « navigateur incompatible » */
+  dialog#modalNavigateur { border: 0; border-radius: 18px; padding: 30px 28px 22px; max-width: 540px; width: calc(100% - 32px);
+    background: var(--carte); color: var(--encre); box-shadow: 0 20px 60px rgba(31,42,55,.3); }
+  dialog#modalNavigateur::backdrop { background: rgba(31,42,55,.55); }
+  dialog#modalNavigateur.secours { display: block; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 100; margin: 0; }
+  .voile { position: fixed; inset: 0; background: rgba(31,42,55,.55); z-index: 99; }
+  .modal-ico { width: 56px; height: 56px; border-radius: 50%; background: var(--alerte); border: 3px solid var(--alerte-bord);
+    color: #9a6a12; font: 700 30px Literata, serif; display: grid; place-items: center; margin-bottom: 14px; }
+  #modalNavigateur h2 { font-size: 25px; margin-bottom: 6px; }
+  .modal-detecte { color: var(--doux); font-size: 16px; margin: 0 0 12px; }
+  #modalTexte { margin: 0 0 14px; }
+  .modal-compat { background: var(--papier); border-radius: 12px; padding: 12px 16px; font-size: 17px; }
+  .modal-compat p { margin: 0 0 4px; } .modal-compat ul { list-style: none; margin: 0; padding: 0; }
+  .modal-compat li { padding: 3px 0; }
+  .modal-etapes { margin: 16px 0 0; padding-left: 22px; font-size: 17px; } .modal-etapes li { margin: 5px 0; }
+  .modal-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .modal-actions .gros-bouton { flex: 1 1 260px; font-size: 18px; min-height: 54px; }
+  .bouton-lien { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; flex: 1 1 200px; min-height: 54px; }
+  .modal-bas { text-align: center; margin: 18px 0 0; font-size: 16px; color: var(--doux); }
+  .modal-bas a { color: var(--accent); font-weight: 600; }
   footer { margin-top: 30px; color: var(--doux); font-size: 14px; text-align: center; }
   footer a { color: inherit; }
 
@@ -157,7 +178,32 @@
       <b>Microsoft Edge</b>, sur un ordinateur (Mac ou Windows). Firefox, Safari, les tablettes et les téléphones
       ne le permettent pas.</p>
     <p>Vous êtes sur la liseuse elle-même ? <a href="liseuse.html">Ouvrez la version pour liseuse</a> pour télécharger les livres un par un.</p>
+    <button class="gros-bouton" type="button" id="btnRevoirModal">Comment faire ?</button>
   </section>
+
+  <!-- Fenêtre : navigateur incompatible -->
+  <dialog id="modalNavigateur" aria-labelledby="modalTitre">
+    <div class="modal-ico" aria-hidden="true">!</div>
+    <h2 id="modalTitre">Ce navigateur ne peut pas copier de livres</h2>
+    <p class="modal-detecte">Navigateur détecté : <b id="modalNav">—</b></p>
+    <p id="modalTexte"></p>
+    <div class="modal-compat">
+      <p><b>Navigateurs compatibles, sur un ordinateur Mac ou Windows :</b></p>
+      <ul>
+        <li><span class="ok">✓</span> Google Chrome</li>
+        <li><span class="ok">✓</span> Microsoft Edge (déjà installé sur les PC Windows)</li>
+      </ul>
+    </div>
+    <ol class="modal-etapes" id="modalEtapes"></ol>
+    <div class="modal-actions">
+      <button class="gros-bouton" type="button" id="btnCopierAdresse">Copier l'adresse de la page</button>
+      <a class="bouton bouton-lien" id="lienChrome" href="https://www.google.com/intl/fr_fr/chrome/" target="_blank" rel="noopener">Télécharger Chrome</a>
+    </div>
+    <p class="modal-bas">
+      <a href="liseuse.html">Je suis sur une liseuse</a> ·
+      <button class="lien" type="button" id="btnFermerModal">Fermer</button>
+    </p>
+  </dialog>
 
   <!-- Étape 1 -->
   <section id="etape1" class="carte">
@@ -287,8 +333,89 @@ function estPresent(livre) {
 }
 
 /* ---------- Démarrage ---------- */
+/* ---------- Vérification du navigateur ---------- */
+function analyserNavigateur() {
+  const ua = navigator.userAgent;
+  const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1); // iPad « version ordinateur »
+  let nom = "inconnu";
+  if (navigator.brave) nom = "Brave";
+  else if (/Edg\//.test(ua)) nom = "Microsoft Edge";
+  else if (/OPR\//.test(ua)) nom = "Opera";
+  else if (/SamsungBrowser/.test(ua)) nom = "Samsung Internet";
+  else if (/Firefox|FxiOS/.test(ua)) nom = "Firefox";
+  else if (/CriOS/.test(ua)) nom = "Chrome";
+  else if (/Chrome\//.test(ua)) nom = "Google Chrome";
+  else if (/Safari\//.test(ua)) nom = "Safari";
+  if (mobile) nom += /iPad|Macintosh/.test(ua) ? " sur tablette" : " sur téléphone ou tablette";
+  const compatible = "showDirectoryPicker" in window && window.isSecureContext && !mobile;
+  return { nom, mobile, compatible, chromium: /Chrome\//.test(ua) && !mobile };
+}
+
+function preparerModal(nav) {
+  $("modalNav").textContent = nav.nom;
+  let texte, etapes;
+  if (nav.mobile) {
+    texte = "Les téléphones et les tablettes ne permettent pas d'écrire sur une liseuse branchée. Il faut un ordinateur.";
+    etapes = ["Allez sur un ordinateur (Mac ou PC Windows).", "Ouvrez Google Chrome ou Microsoft Edge.",
+              "Tapez l'adresse de cette page : <b>" + echapper(location.host + location.pathname) + "</b>"];
+    $("btnCopierAdresse").classList.add("cache");
+  } else if (nav.nom === "Brave") {
+    texte = "Brave bloque par défaut l'accès aux fichiers dont cette page a besoin.";
+    etapes = ["Cliquez sur « Copier l'adresse de la page ».", "Ouvrez Google Chrome ou Microsoft Edge.",
+              "Collez l'adresse dans la barre du haut et appuyez sur Entrée."];
+  } else if (nav.chromium) {
+    texte = "Votre navigateur est trop ancien ou bloque l'accès aux fichiers. Mettez-le à jour, ou utilisez Chrome ou Edge.";
+    etapes = ["Cliquez sur « Copier l'adresse de la page ».", "Ouvrez Google Chrome ou Microsoft Edge (à jour).",
+              "Collez l'adresse dans la barre du haut et appuyez sur Entrée."];
+  } else {
+    texte = `${nav.nom === "inconnu" ? "Ce navigateur" : nav.nom} ne permet pas aux pages web d'écrire sur une liseuse branchée. ` +
+            "Rien de grave : il suffit d'ouvrir cette même page avec un autre navigateur.";
+    etapes = ["Cliquez sur « Copier l'adresse de la page ».",
+              estMac ? "Ouvrez Google Chrome (dans le dossier Applications)." : "Ouvrez Microsoft Edge ou Google Chrome.",
+              "Collez l'adresse dans la barre du haut et appuyez sur Entrée."];
+  }
+  if (nav.mobile) $("lienChrome").classList.add("cache");
+  $("modalTexte").textContent = texte;
+  $("modalEtapes").innerHTML = etapes.map((t) => `<li>${t}</li>`).join("");
+}
+
+function ouvrirModal() {
+  const d = $("modalNavigateur");
+  if (typeof d.showModal === "function") { if (!d.open) d.showModal(); }
+  else { // navigateur sans <dialog> : affichage de secours
+    d.classList.add("secours"); d.setAttribute("open", "");
+    if (!document.querySelector(".voile")) { const v = document.createElement("div"); v.className = "voile"; document.body.appendChild(v); }
+  }
+}
+function fermerModal() {
+  const d = $("modalNavigateur");
+  if (typeof d.close === "function" && d.open) d.close();
+  d.classList.remove("secours"); d.removeAttribute("open");
+  const v = document.querySelector(".voile"); if (v) v.remove();
+}
+
+async function copierAdresse() {
+  const adresse = location.href.split("#")[0];
+  const b = $("btnCopierAdresse");
+  try { await navigator.clipboard.writeText(adresse); }
+  catch {
+    const t = document.createElement("textarea"); t.value = adresse; document.body.appendChild(t);
+    t.select(); try { document.execCommand("copy"); } catch { /* rien */ } t.remove();
+  }
+  b.textContent = "✓ Adresse copiée !";
+  setTimeout(() => { b.textContent = "Copier l'adresse de la page"; }, 2500);
+}
+
 async function demarrer() {
-  if (!("showDirectoryPicker" in window)) { afficher("incompatible"); return; }
+  const nav = analyserNavigateur();
+  if (!nav.compatible) {
+    preparerModal(nav);
+    afficher("incompatible");
+    etapeActive(0);
+    ouvrirModal();
+    return;
+  }
   try {
     const r = await fetch("catalogue.json", { cache: "no-cache" });
     etat.catalogue = await r.json();
@@ -504,6 +631,9 @@ function recommencer() {
 
 /* ---------- Événements ---------- */
 $("btnConnecter").addEventListener("click", connecter);
+$("btnCopierAdresse").addEventListener("click", copierAdresse);
+$("btnFermerModal").addEventListener("click", fermerModal);
+$("btnRevoirModal").addEventListener("click", ouvrirModal);
 $("btnRechoisir").addEventListener("click", () => { afficher("etape1"); connecter(); });
 document.querySelectorAll("[data-modele]").forEach((b) => b.addEventListener("click", () => choisirModele(b.dataset.modele)));
 $("btnChanger").addEventListener("click", recommencer);
