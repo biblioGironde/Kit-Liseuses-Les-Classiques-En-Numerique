@@ -140,19 +140,33 @@ def construire_opds(par_siecle):
     (SITE / "opds.xml").write_text(racine + "</feed>\n", encoding="utf-8")
 
 
+def est_bnr(l):
+    return l.get("source") == "bnr" or "ebooks-bnr.com" in l.get("url", "")
+
+
 def ecrire_sources(par_siecle):
     lignes = ["# Sources et licences", "",
-              "Les œuvres sont dans le domaine public. Les fichiers EPUB issus de Wikisource",
-              "sont diffusés sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr)",
-              "(transcriptions et mise en forme des contributeurs de Wikisource).", "",
+              "Toutes les œuvres sont dans le domaine public. Les fichiers EPUB proviennent de :", "",
+              "- **[Bibliothèque numérique romande](https://ebooks-bnr.com)** (BNR) : éditions réalisées par des",
+              "  bénévoles de l'association Les Bourlapapey. Elles peuvent être utilisées librement, **sans",
+              "  modification**, en indiquant la source ; leur partie éditoriale (notes, présentation, maquette)",
+              "  ne peut pas être utilisée à des fins commerciales sans leur accord. Ces fichiers sont donc",
+              "  diffusés ici tels quels (pas de conversion KEPUB).",
+              "- **[Wikisource](https://fr.wikisource.org)** : licence",
+              "  [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr)",
+              "  (transcriptions et mise en forme des contributeurs de Wikisource).", "",
               "| Siècle | Auteur | Titre | Source |", "|---|---|---|---|"]
     for s, livres in par_siecle.items():
         for l in livres:
-            if l["url"]:
-                src = f"[lien direct]({l['url']})"
+            page = l.get("page") or ""
+            if est_bnr(l):
+                src = f"[BNR]({page or l['url']})"
+            elif l.get("source") == "wikisource" or (not l["url"] and l["wikisource"]):
+                if not page:
+                    page = "https://fr.wikisource.org/wiki/" + quote(l["wikisource"].replace(" ", "_"))
+                src = f"[Wikisource]({page})"
             else:
-                page = l["wikisource"].replace(" ", "_")
-                src = f"[Wikisource](https://fr.wikisource.org/wiki/{quote(page)})"
+                src = f"[lien]({page or l['url']})"
             lignes.append(f"| {s}e | {l['auteur']} | {l['titre']} | {src} |")
     (RACINE / "SOURCES.md").write_text("\n".join(lignes) + "\n", encoding="utf-8")
 
@@ -171,6 +185,8 @@ def construire_kepub(par_siecle):
         dest = SITE / "kepub" / s
         dest.mkdir(parents=True)
         for l in livres:
+            if est_bnr(l):
+                continue  # la BNR demande de diffuser ses fichiers sans modification
             r = subprocess.run([outil, "--output", str(dest), str(chemin_epub(l))],
                                capture_output=True, text=True)
             if r.returncode != 0 or not (dest / nom_kepub(l)).exists():
