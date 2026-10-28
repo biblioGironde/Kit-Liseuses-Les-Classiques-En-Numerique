@@ -70,6 +70,22 @@ cd site && python3 -m http.server 8000   # puis ouvrir http://localhost:8000 dan
 
 (La conversion KEPUB n'a lieu en local que si `kepubify` est installé.)
 
+## Sources de livres numériques libres
+
+Pour compléter le catalogue ou trouver d'autres textes du domaine public :
+
+* [Bibliothèque numérique romande](https://ebooks-bnr.com) propose des EPUB soignés et relus. C’est le meilleur choix pour les liseuses.
+* [Ebooks libres et gratuits](https://www.ebooksgratuits.com) a un très gros catalogue classique, en EPUB, PDF et Mobi.
+* [Wikisource](https://fr.wikisource.org) a des textes établis d’après les éditions originales et permet un export EPUB à la volée.
+* [Gallica (BnF)](https://gallica.bnf.fr) donne accès aux éditions originales numérisées. C’est idéal pour la médiation, par exemple pour montrer la première édition de *Madame Bovary*.
+* [Bibebook](https://www.bibebook.com) et [Project Gutenberg](https://www.gutenberg.org/browse/languages/fr) sont deux bons compléments.
+* [Littérature audio](https://www.litteratureaudio.com) propose des versions lues gratuitement, utiles pour l’accessibilité.
+
+Avant d'ajouter au dépôt un EPUB venant d'un autre site que Wikisource, vérifiez sa
+licence : certains sites autorisent la redistribution seulement sans modification
+ou sans usage commercial. Indiquez le lien direct dans la colonne `url` de
+`catalogue.csv` pour que la source apparaisse dans `SOURCES.md`.
+
 ## Droits
 
 - Les œuvres sont dans le domaine public en France (auteurs morts depuis plus de 70 ans).
