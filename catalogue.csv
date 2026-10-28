@@ -1,74 +1,74 @@
 siecle,auteur,titre,annee,source,page,url,wikisource,statut
-15,François Villon,Le Testament,1461,,,,Le Testament (Villon),
-15,François Villon,Le Lais,1456,,,,Le Lais,
-15,Charles d'Orléans,Poésies,1450,,,,Poésies (Charles d’Orléans),
-15,Christine de Pizan,La Cité des dames,1405,,,,La Cité des dames,
-15,Alain Chartier,La Belle Dame sans merci,1424,,,,La Belle Dame sans mercy,
-15,Anonyme,La Farce de Maître Pathelin,1460,,,,La Farce de Maître Pathelin,
-15,Anonyme,Les Cent Nouvelles nouvelles,1462,,,,Les Cent Nouvelles nouvelles,
-15,Anonyme,Les Quinze Joies du mariage,1400,,,,Les Quinze Joies de mariage,
-15,Antoine de La Sale,Le Petit Jehan de Saintré,1456,,,,L’Hystoire et plaisante cronicque du petit Jehan de Saintré,
-15,Philippe de Commynes,Mémoires,1498,,,,Mémoires (Commynes),
-16,François Rabelais,Gargantua,1534,,,,Gargantua,
-16,François Rabelais,Pantagruel,1532,,,,Pantagruel,
-16,Michel de Montaigne,Essais,1580,,,,Essais,
-16,Pierre de Ronsard,Les Amours,1552,,,,Les Amours (Ronsard),
-16,Pierre de Ronsard,Sonnets pour Hélène,1578,,,,Sonnets pour Hélène,
-16,Joachim Du Bellay,Les Regrets,1558,,,,Les Regrets,
-16,Joachim Du Bellay,Défense et illustration de la langue française,1549,,,,Défense et illustration de la langue française,
-16,Louise Labé,Œuvres,1555,,,,Œuvres de Louise Labé,
-16,Marguerite de Navarre,L'Heptaméron,1559,,,,L’Heptaméron,
-16,Clément Marot,L'Adolescence clémentine,1532,,,,L’Adolescence clémentine,
-16,Maurice Scève,Délie,1544,,,,Délie,
-16,Étienne de La Boétie,Discours de la servitude volontaire,1576,,,,Discours de la servitude volontaire,
-16,Agrippa d'Aubigné,Les Tragiques,1616,,,,Les Tragiques,
-17,Pierre Corneille,Le Cid,1637,,,,Le Cid,
+15,François Villon,Le Testament,1461,,,,Le Testament (Villon),introuvable (BNR et Wikisource)
+15,François Villon,Le Lais,1456,wikisource,https://fr.wikisource.org/wiki/Le_Lais,https://ws-export.wmcloud.org/?lang=fr&page=Le+Lais&format=epub-3,Le Lais,ok
+15,Charles d'Orléans,Poésies,1450,wikisource,https://fr.wikisource.org/wiki/Po%C3%A9sies_compl%C3%A8tes_%28Charles_d%27Orl%C3%A9ans%29,https://ws-export.wmcloud.org/?lang=fr&page=Po%C3%A9sies+compl%C3%A8tes+%28Charles+d%27Orl%C3%A9ans%29&format=epub-3,Poésies complètes (Charles d'Orléans),trouvé par recherche Wikisource : à vérifier
+15,Christine de Pizan,La Cité des dames,1405,,,,La Cité des dames,introuvable (BNR et Wikisource)
+15,Alain Chartier,La Belle Dame sans merci,1424,wikisource,https://fr.wikisource.org/wiki/La_Belle_Dame_sans_merci,https://ws-export.wmcloud.org/?lang=fr&page=La+Belle+Dame+sans+merci&format=epub-3,La Belle Dame sans merci,homonymie Wikisource : choisir une édition
+15,Anonyme,La Farce de Maître Pathelin,1460,wikisource,https://fr.wikisource.org/wiki/La_Farce_de_Ma%C3%AEtre_Pathelin,https://ws-export.wmcloud.org/?lang=fr&page=La+Farce+de+Ma%C3%AEtre+Pathelin&format=epub-3,La Farce de Maître Pathelin,homonymie Wikisource : choisir une édition
+15,Anonyme,Les Cent Nouvelles nouvelles,1462,,,,Les Cent Nouvelles nouvelles,introuvable (BNR et Wikisource)
+15,Anonyme,Les Quinze Joies du mariage,1400,,,,Les Quinze Joies de mariage,introuvable (BNR et Wikisource)
+15,Antoine de La Sale,Le Petit Jehan de Saintré,1456,,,,L’Hystoire et plaisante cronicque du petit Jehan de Saintré,introuvable (BNR et Wikisource)
+15,Philippe de Commynes,Mémoires,1498,wikisource,https://fr.wikisource.org/wiki/Causeries_du_lundi/Tome_I/M%C3%A9moires_de_Philippe_de_Commynes,https://ws-export.wmcloud.org/?lang=fr&page=Causeries+du+lundi%2FTome+I%2FM%C3%A9moires+de+Philippe+de+Commynes&format=epub-3,Causeries du lundi/Tome I/Mémoires de Philippe de Commynes,trouvé par recherche Wikisource : à vérifier
+16,François Rabelais,Gargantua,1534,wikisource,https://fr.wikisource.org/wiki/Gargantua,https://ws-export.wmcloud.org/?lang=fr&page=Gargantua&format=epub-3,Gargantua,homonymie Wikisource : choisir une édition
+16,François Rabelais,Pantagruel,1532,wikisource,https://fr.wikisource.org/wiki/Pantagruel,https://ws-export.wmcloud.org/?lang=fr&page=Pantagruel&format=epub-3,Pantagruel,homonymie Wikisource : choisir une édition
+16,Michel de Montaigne,Essais,1580,wikisource,https://fr.wikisource.org/wiki/Essais,https://ws-export.wmcloud.org/?lang=fr&page=Essais&format=epub-3,Essais,homonymie Wikisource : choisir une édition
+16,Pierre de Ronsard,Les Amours,1552,wikisource,https://fr.wikisource.org/wiki/Les_Amours_%28Ronsard%29,https://ws-export.wmcloud.org/?lang=fr&page=Les+Amours+%28Ronsard%29&format=epub-3,Les Amours (Ronsard),homonymie Wikisource : choisir une édition
+16,Pierre de Ronsard,Sonnets pour Hélène,1578,wikisource,https://fr.wikisource.org/wiki/Sonnets_pour_H%C3%A9l%C3%A8ne,https://ws-export.wmcloud.org/?lang=fr&page=Sonnets+pour+H%C3%A9l%C3%A8ne&format=epub-3,Sonnets pour Hélène,ok
+16,Joachim Du Bellay,Les Regrets,1558,wikisource,https://fr.wikisource.org/wiki/Les_Regrets,https://ws-export.wmcloud.org/?lang=fr&page=Les+Regrets&format=epub-3,Les Regrets,homonymie Wikisource : choisir une édition
+16,Joachim Du Bellay,Défense et illustration de la langue française,1549,wikisource,https://fr.wikisource.org/wiki/D%C3%A9fense_et_illustration_de_la_langue_fran%C3%A7aise,https://ws-export.wmcloud.org/?lang=fr&page=D%C3%A9fense+et+illustration+de+la+langue+fran%C3%A7aise&format=epub-3,Défense et illustration de la langue française,ok
+16,Louise Labé,Œuvres,1555,wikisource,https://fr.wikisource.org/wiki/%C5%92uvres_de_Louise_Lab%C3%A9%2C_%C3%A9dition_Boy%2C_1887,https://ws-export.wmcloud.org/?lang=fr&page=%C5%92uvres+de+Louise+Lab%C3%A9%2C+%C3%A9dition+Boy%2C+1887&format=epub-3,"Œuvres de Louise Labé, édition Boy, 1887",trouvé par recherche Wikisource : à vérifier
+16,Marguerite de Navarre,L'Heptaméron,1559,wikisource,https://fr.wikisource.org/wiki/L%E2%80%99Heptam%C3%A9ron,https://ws-export.wmcloud.org/?lang=fr&page=L%E2%80%99Heptam%C3%A9ron&format=epub-3,L’Heptaméron,homonymie Wikisource : choisir une édition
+16,Clément Marot,L'Adolescence clémentine,1532,wikisource,https://fr.wikisource.org/wiki/La_Suite_de_l%E2%80%99Adolescence_Cl%C3%A9mentine,https://ws-export.wmcloud.org/?lang=fr&page=La+Suite+de+l%E2%80%99Adolescence+Cl%C3%A9mentine&format=epub-3,La Suite de l’Adolescence Clémentine,trouvé par recherche Wikisource : à vérifier
+16,Maurice Scève,Délie,1544,wikisource,https://fr.wikisource.org/wiki/D%C3%A9lie_%281862%29,https://ws-export.wmcloud.org/?lang=fr&page=D%C3%A9lie+%281862%29&format=epub-3,Délie (1862),trouvé par recherche Wikisource : à vérifier
+16,Étienne de La Boétie,Discours de la servitude volontaire,1576,wikisource,https://fr.wikisource.org/wiki/Discours_de_la_servitude_volontaire,https://ws-export.wmcloud.org/?lang=fr&page=Discours+de+la+servitude+volontaire&format=epub-3,Discours de la servitude volontaire,homonymie Wikisource : choisir une édition
+16,Agrippa d'Aubigné,Les Tragiques,1616,wikisource,https://fr.wikisource.org/wiki/Les_Tragiques,https://ws-export.wmcloud.org/?lang=fr&page=Les+Tragiques&format=epub-3,Les Tragiques,homonymie Wikisource : choisir une édition
+17,Pierre Corneille,Le Cid,1637,wikisource,https://fr.wikisource.org/wiki/Le_Cid,https://ws-export.wmcloud.org/?lang=fr&page=Le+Cid&format=epub-3,Le Cid,homonymie Wikisource : choisir une édition
 17,Molière,Le Misanthrope,1666,bnr,https://ebooks-bnr.com/moliere-le-misanthrope/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/moliere_misanthrope.epub,Le Misanthrope,ok
 17,Molière,Tartuffe,1669,bnr,https://ebooks-bnr.com/moliere-le-tartuffe-ou-limposteur/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/moliere_tartuffe.epub,Le Tartuffe ou l’Imposteur,ok
 17,Molière,L'Avare,1668,bnr,https://ebooks-bnr.com/moliere-lavare/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/moliere_avare.epub,L’Avare,ok
-17,Molière,Dom Juan,1665,,,,Dom Juan ou le Festin de pierre,
-17,Jean Racine,Phèdre,1677,,,,Phèdre,
-17,Jean Racine,Andromaque,1667,,,,Andromaque,
-17,Jean Racine,Britannicus,1669,,,,Britannicus,
-17,Jean de La Fontaine,Fables,1668,,,,Fables de La Fontaine,
-17,Madame de La Fayette,La Princesse de Clèves,1678,,,,La Princesse de Clèves,
-17,Blaise Pascal,Pensées,1670,,,,Pensées (Pascal),
+17,Molière,Dom Juan,1665,wikisource,https://fr.wikisource.org/wiki/Dom_Juan_ou_le_Festin_de_pierre,https://ws-export.wmcloud.org/?lang=fr&page=Dom+Juan+ou+le+Festin+de+pierre&format=epub-3,Dom Juan ou le Festin de pierre,homonymie Wikisource : choisir une édition
+17,Jean Racine,Phèdre,1677,wikisource,https://fr.wikisource.org/wiki/Ph%C3%A8dre,https://ws-export.wmcloud.org/?lang=fr&page=Ph%C3%A8dre&format=epub-3,Phèdre,homonymie Wikisource : choisir une édition
+17,Jean Racine,Andromaque,1667,wikisource,https://fr.wikisource.org/wiki/Andromaque,https://ws-export.wmcloud.org/?lang=fr&page=Andromaque&format=epub-3,Andromaque,homonymie Wikisource : choisir une édition
+17,Jean Racine,Britannicus,1669,wikisource,https://fr.wikisource.org/wiki/Britannicus,https://ws-export.wmcloud.org/?lang=fr&page=Britannicus&format=epub-3,Britannicus,homonymie Wikisource : choisir une édition
+17,Jean de La Fontaine,Fables,1668,wikisource,https://fr.wikisource.org/wiki/Fables_de_La_Fontaine,https://ws-export.wmcloud.org/?lang=fr&page=Fables+de+La+Fontaine&format=epub-3,Fables de La Fontaine,homonymie Wikisource : choisir une édition
+17,Madame de La Fayette,La Princesse de Clèves,1678,wikisource,https://fr.wikisource.org/wiki/La_Princesse_de_Cl%C3%A8ves,https://ws-export.wmcloud.org/?lang=fr&page=La+Princesse+de+Cl%C3%A8ves&format=epub-3,La Princesse de Clèves,homonymie Wikisource : choisir une édition
+17,Blaise Pascal,Pensées,1670,wikisource,https://fr.wikisource.org/wiki/Pens%C3%A9es_%28Pascal%29,https://ws-export.wmcloud.org/?lang=fr&page=Pens%C3%A9es+%28Pascal%29&format=epub-3,Pensées (Pascal),homonymie Wikisource : choisir une édition
 17,Charles Perrault,Contes,1697,bnr,https://ebooks-bnr.com/contes-charles-perrault/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/perrault_contes.epub,Contes de Perrault,ok
-17,Jean de La Bruyère,Les Caractères,1688,,,,Les Caractères,
+17,Jean de La Bruyère,Les Caractères,1688,wikisource,https://fr.wikisource.org/wiki/Les_Caract%C3%A8res,https://ws-export.wmcloud.org/?lang=fr&page=Les+Caract%C3%A8res&format=epub-3,Les Caractères,homonymie Wikisource : choisir une édition
 18,Voltaire,Candide,1759,bnr,https://ebooks-bnr.com/voltaire-candide-ou-loptimisme/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/voltaire_candide.epub,"Candide, ou l’Optimisme",ok
 18,Voltaire,Zadig,1747,bnr,https://ebooks-bnr.com/voltaire-zadig-et-autres-contes/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/voltaire_zadig_autres_contes.epub,Zadig ou la Destinée,ok
 18,Voltaire,L'Ingénu,1767,bnr,https://ebooks-bnr.com/voltaire-lingenu/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/voltaire_l_ingenu.epub,L’Ingénu,ok
-18,Montesquieu,Lettres persanes,1721,,,,Lettres persanes,
-18,Denis Diderot,Jacques le fataliste,1796,,,,Jacques le fataliste et son maître,
-18,Denis Diderot,La Religieuse,1796,,,,La Religieuse,
+18,Montesquieu,Lettres persanes,1721,wikisource,https://fr.wikisource.org/wiki/Lettres_persanes,https://ws-export.wmcloud.org/?lang=fr&page=Lettres+persanes&format=epub-3,Lettres persanes,ok
+18,Denis Diderot,Jacques le fataliste,1796,wikisource,https://fr.wikisource.org/wiki/Jacques_le_Fataliste_et_son_ma%C3%AEtre,https://ws-export.wmcloud.org/?lang=fr&page=Jacques+le+Fataliste+et+son+ma%C3%AEtre&format=epub-3,Jacques le Fataliste et son maître,ok
+18,Denis Diderot,La Religieuse,1796,wikisource,https://fr.wikisource.org/wiki/La_Religieuse,https://ws-export.wmcloud.org/?lang=fr&page=La+Religieuse&format=epub-3,La Religieuse,ok
 18,Jean-Jacques Rousseau,Les Confessions,1782,bnr,https://ebooks-bnr.com/rousseau-jean-jacques-les-confessions/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/rousseau_les_confessions.epub,Les Confessions (Rousseau),ok
 18,Jean-Jacques Rousseau,Les Rêveries du promeneur solitaire,1782,bnr,https://ebooks-bnr.com/rousseau-jean-jacques-les-reveries-du-promeneur-solitaire/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/rousseau_reveries_promeneur_solitaire.epub,Les Rêveries du promeneur solitaire,ok
-18,Marivaux,Le Jeu de l'amour et du hasard,1730,,,,Le Jeu de l’amour et du hasard,
-18,Beaumarchais,Le Mariage de Figaro,1784,,,,La Folle Journée ou le Mariage de Figaro,
-18,Beaumarchais,Le Barbier de Séville,1775,,,,Le Barbier de Séville,
+18,Marivaux,Le Jeu de l'amour et du hasard,1730,wikisource,https://fr.wikisource.org/wiki/Le_Jeu_de_l%E2%80%99amour_et_du_hasard,https://ws-export.wmcloud.org/?lang=fr&page=Le+Jeu+de+l%E2%80%99amour+et+du+hasard&format=epub-3,Le Jeu de l’amour et du hasard,ok
+18,Beaumarchais,Le Mariage de Figaro,1784,wikisource,https://fr.wikisource.org/wiki/Le_Mariage_de_Figaro,https://ws-export.wmcloud.org/?lang=fr&page=Le+Mariage+de+Figaro&format=epub-3,Le Mariage de Figaro,trouvé par recherche Wikisource : à vérifier
+18,Beaumarchais,Le Barbier de Séville,1775,wikisource,https://fr.wikisource.org/wiki/Le_Barbier_de_S%C3%A9ville,https://ws-export.wmcloud.org/?lang=fr&page=Le+Barbier+de+S%C3%A9ville&format=epub-3,Le Barbier de Séville,ok
 18,Choderlos de Laclos,Les Liaisons dangereuses,1782,bnr,https://ebooks-bnr.com/choderlos-de-laclos-pierre-les-liaisons-dangereuses/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/laclos_les_liaisons_dangereuses.epub,Les Liaisons dangereuses,ok
-18,Abbé Prévost,Manon Lescaut,1731,,,,Manon Lescaut,
-18,Bernardin de Saint-Pierre,Paul et Virginie,1788,,,,Paul et Virginie,
+18,Abbé Prévost,Manon Lescaut,1731,wikisource,https://fr.wikisource.org/wiki/Manon_Lescaut,https://ws-export.wmcloud.org/?lang=fr&page=Manon+Lescaut&format=epub-3,Manon Lescaut,ok
+18,Bernardin de Saint-Pierre,Paul et Virginie,1788,wikisource,https://fr.wikisource.org/wiki/Paul_et_Virginie,https://ws-export.wmcloud.org/?lang=fr&page=Paul+et+Virginie&format=epub-3,Paul et Virginie,ok
 19,Victor Hugo,Les Misérables (tome 1),1862,bnr,https://ebooks-bnr.com/hugo-victor-les-miserables-tome-1/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/hugo_les_miserables1.epub,Les Misérables,ok
 19,Victor Hugo,Les Misérables (tome 2),1862,bnr,https://ebooks-bnr.com/hugo-victor-les-miserables-tome2/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/hugo_les_miserables2.epub,Les Misérables,ok
 19,Victor Hugo,Les Misérables (tome 3),1862,bnr,https://ebooks-bnr.com/hugo-victor-les-miserables-tome-3/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/hugo_les_miserables3.epub,Les Misérables,ok
 19,Victor Hugo,Les Misérables (tome 4),1862,bnr,https://ebooks-bnr.com/hugo-victor-les-miserables-tome-4/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/hugo_les_miserables4.epub,Les Misérables,ok
 19,Victor Hugo,Les Misérables (tome 5),1862,bnr,https://ebooks-bnr.com/hugo-victor-les-miserables-tome-5/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/hugo_les_miserables5.epub,Les Misérables,ok
 19,Victor Hugo,Notre-Dame de Paris,1831,bnr,https://ebooks-bnr.com/hugo-victor-notre-dame-de-paris/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/hugo_notre_dame_de_paris.epub,Notre-Dame de Paris,ok
-19,Victor Hugo,Les Contemplations,1856,,,,Les Contemplations,
-19,Stendhal,Le Rouge et le Noir,1830,,,,Le Rouge et le Noir,
-19,Stendhal,La Chartreuse de Parme,1839,,,,La Chartreuse de Parme,
+19,Victor Hugo,Les Contemplations,1856,wikisource,https://fr.wikisource.org/wiki/Les_Contemplations,https://ws-export.wmcloud.org/?lang=fr&page=Les+Contemplations&format=epub-3,Les Contemplations,ok
+19,Stendhal,Le Rouge et le Noir,1830,wikisource,https://fr.wikisource.org/wiki/Le_Rouge_et_le_Noir,https://ws-export.wmcloud.org/?lang=fr&page=Le+Rouge+et+le+Noir&format=epub-3,Le Rouge et le Noir,ok
+19,Stendhal,La Chartreuse de Parme,1839,wikisource,https://fr.wikisource.org/wiki/La_Chartreuse_de_Parme,https://ws-export.wmcloud.org/?lang=fr&page=La+Chartreuse+de+Parme&format=epub-3,La Chartreuse de Parme,homonymie Wikisource : choisir une édition
 19,Honoré de Balzac,Le Père Goriot,1835,bnr,https://ebooks-bnr.com/balzac-honore-de-le-pere-goriot/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/balzac_le_pere_goriot.epub,Le Père Goriot,ok
-19,Honoré de Balzac,Eugénie Grandet,1834,,,,Eugénie Grandet,
-19,Honoré de Balzac,Illusions perdues,1843,,,,Illusions perdues,
+19,Honoré de Balzac,Eugénie Grandet,1834,wikisource,https://fr.wikisource.org/wiki/Eug%C3%A9nie_Grandet,https://ws-export.wmcloud.org/?lang=fr&page=Eug%C3%A9nie+Grandet&format=epub-3,Eugénie Grandet,ok
+19,Honoré de Balzac,Illusions perdues,1843,wikisource,https://fr.wikisource.org/wiki/Illusions_perdues,https://ws-export.wmcloud.org/?lang=fr&page=Illusions+perdues&format=epub-3,Illusions perdues,ok
 19,Gustave Flaubert,Madame Bovary,1857,bnr,https://ebooks-bnr.com/flaubert-gustave-madame-bovary/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/flaubert_madame_bovary.epub,Madame Bovary,ok
 19,Gustave Flaubert,L'Éducation sentimentale,1869,bnr,https://ebooks-bnr.com/gustave-flaubert-leducation-sentimentale/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/flaubert_l_education_sentimentale.epub,L’Éducation sentimentale,ok
 19,Émile Zola,Germinal,1885,bnr,https://ebooks-bnr.com/zola-emile-germinal/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/zola_germinal.epub,Germinal,ok
 19,Émile Zola,L'Assommoir,1877,bnr,https://ebooks-bnr.com/zola-emile-lassommoir/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/zola_assommoir.epub,L’Assommoir,ok
-19,Émile Zola,Au Bonheur des Dames,1883,,,,Au Bonheur des Dames,
-19,Guy de Maupassant,Bel-Ami,1885,,,,Bel-Ami,
-19,Guy de Maupassant,Une vie,1883,,,,Une vie,
-19,Guy de Maupassant,Le Horla,1887,,,,Le Horla (1887),
+19,Émile Zola,Au Bonheur des Dames,1883,wikisource,https://fr.wikisource.org/wiki/Au_bonheur_des_dames,https://ws-export.wmcloud.org/?lang=fr&page=Au+bonheur+des+dames&format=epub-3,Au bonheur des dames,ok
+19,Guy de Maupassant,Bel-Ami,1885,wikisource,https://fr.wikisource.org/wiki/Bel-Ami,https://ws-export.wmcloud.org/?lang=fr&page=Bel-Ami&format=epub-3,Bel-Ami,homonymie Wikisource : choisir une édition
+19,Guy de Maupassant,Une vie,1883,wikisource,https://fr.wikisource.org/wiki/Une_vie,https://ws-export.wmcloud.org/?lang=fr&page=Une+vie&format=epub-3,Une vie,ok
+19,Guy de Maupassant,Le Horla,1887,,,,Le Horla (1887),erreur réseau : 'query'
 19,Alexandre Dumas,Les Trois Mousquetaires,1844,bnr,https://ebooks-bnr.com/dumas-alexandre-trois-mousquetaires/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/dumas_les_trois_mousquetaires_illustre.epub,Les Trois Mousquetaires,ok
 19,Alexandre Dumas,Le Comte de Monte-Cristo (tome 1),1844,bnr,https://ebooks-bnr.com/dumas-alexandre-comte-de-monte-cristo-tome-1/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/dumas_monte_cristo_1.epub,Le Comte de Monte-Cristo,ok
 19,Alexandre Dumas,Le Comte de Monte-Cristo (tome 2),1844,bnr,https://ebooks-bnr.com/dumas-alexandre-comte-de-monte-cristo-tome-2/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/dumas_monte_cristo_2.epub,Le Comte de Monte-Cristo,ok
@@ -76,23 +76,23 @@ siecle,auteur,titre,annee,source,page,url,wikisource,statut
 19,Alexandre Dumas,Le Comte de Monte-Cristo (tome 4),1844,bnr,https://ebooks-bnr.com/dumas-alexandre-comte-de-monte-cristo-tome-4/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/dumas_monte_cristo_4.epub,Le Comte de Monte-Cristo,ok
 19,George Sand,La Mare au diable,1846,bnr,https://ebooks-bnr.com/sand-george-mare-diable/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/sand_mare_au_diable.epub,La Mare au diable,ok
 19,Jules Verne,Vingt mille lieues sous les mers,1870,bnr,https://ebooks-bnr.com/verne-jules-vingt-mille-lieues-sous-les-mers/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/verne_20000_lieues_sous_les_mers.epub,Vingt mille lieues sous les mers,ok
-19,Jules Verne,Le Tour du monde en quatre-vingts jours,1873,,,,Le Tour du monde en quatre-vingts jours,
+19,Jules Verne,Le Tour du monde en quatre-vingts jours,1873,wikisource,https://fr.wikisource.org/wiki/Le_Tour_du_monde_en_quatre-vingts_jours,https://ws-export.wmcloud.org/?lang=fr&page=Le+Tour+du+monde+en+quatre-vingts+jours&format=epub-3,Le Tour du monde en quatre-vingts jours,ok
 19,Charles Baudelaire,Les Fleurs du mal,1857,bnr,https://ebooks-bnr.com/baudelaire-charles-fleurs-mal/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/baudelaire_les_fleurs_du_mal.epub,Les Fleurs du mal,ok
-19,Arthur Rimbaud,Une saison en enfer,1873,,,,Une saison en enfer,
-19,Arthur Rimbaud,Poésies,1895,,,,Poésies (Rimbaud),
-19,Paul Verlaine,Poèmes saturniens,1866,,,,Poèmes saturniens,
-19,Alfred de Musset,Lorenzaccio,1834,,,,Lorenzaccio,
-19,Edmond Rostand,Cyrano de Bergerac,1897,,,,Cyrano de Bergerac (Rostand),
+19,Arthur Rimbaud,Une saison en enfer,1873,wikisource,https://fr.wikisource.org/wiki/Une_saison_en_enfer,https://ws-export.wmcloud.org/?lang=fr&page=Une+saison+en+enfer&format=epub-3,Une saison en enfer,homonymie Wikisource : choisir une édition
+19,Arthur Rimbaud,Poésies,1895,wikisource,https://fr.wikisource.org/wiki/Po%C3%A9sies_%28Rimbaud%29,https://ws-export.wmcloud.org/?lang=fr&page=Po%C3%A9sies+%28Rimbaud%29&format=epub-3,Poésies (Rimbaud),homonymie Wikisource : choisir une édition
+19,Paul Verlaine,Poèmes saturniens,1866,wikisource,https://fr.wikisource.org/wiki/Po%C3%A8mes_saturniens,https://ws-export.wmcloud.org/?lang=fr&page=Po%C3%A8mes+saturniens&format=epub-3,Poèmes saturniens,homonymie Wikisource : choisir une édition
+19,Alfred de Musset,Lorenzaccio,1834,wikisource,https://fr.wikisource.org/wiki/Lorenzaccio,https://ws-export.wmcloud.org/?lang=fr&page=Lorenzaccio&format=epub-3,Lorenzaccio,ok
+19,Edmond Rostand,Cyrano de Bergerac,1897,wikisource,https://fr.wikisource.org/wiki/Cyrano_de_Bergerac_%28Rostand%29,https://ws-export.wmcloud.org/?lang=fr&page=Cyrano+de+Bergerac+%28Rostand%29&format=epub-3,Cyrano de Bergerac (Rostand),ok
 20,Marcel Proust,Du côté de chez Swann,1913,bnr,https://ebooks-bnr.com/proust-marcel-cote-de-chez-swann/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/proust_a_la_recherche_du_temps_perdu_1_swann.epub,Du côté de chez Swann,ok
-20,Alain-Fournier,Le Grand Meaulnes,1913,,,,Le Grand Meaulnes,
-20,Guillaume Apollinaire,Alcools,1913,,,,Alcools,
-20,Guillaume Apollinaire,Calligrammes,1918,,,,Calligrammes,
+20,Alain-Fournier,Le Grand Meaulnes,1913,wikisource,https://fr.wikisource.org/wiki/Le_Grand_Meaulnes,https://ws-export.wmcloud.org/?lang=fr&page=Le+Grand+Meaulnes&format=epub-3,Le Grand Meaulnes,ok
+20,Guillaume Apollinaire,Alcools,1913,wikisource,https://fr.wikisource.org/wiki/Alcools,https://ws-export.wmcloud.org/?lang=fr&page=Alcools&format=epub-3,Alcools,ok
+20,Guillaume Apollinaire,Calligrammes,1918,wikisource,https://fr.wikisource.org/wiki/Calligrammes,https://ws-export.wmcloud.org/?lang=fr&page=Calligrammes&format=epub-3,Calligrammes,ok
 20,Alfred Jarry,Ubu roi,1896,bnr,https://ebooks-bnr.com/jarry-alfred-ubu-roi/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/jarry_ubu_roi.epub,Ubu roi,ok
 20,Colette,Claudine à l'école,1900,bnr,https://ebooks-bnr.com/colette-claudine-a-lecole/,https://ebooks-bnr.com/?fdsb_dl=ebooks/aute/colette_claudine_a_l_ecole.epub,Claudine à l’école,ok
-20,Paul Claudel,L'Annonce faite à Marie,1912,,,,L’Annonce faite à Marie,
-20,André Gide,La Symphonie pastorale,1919,,,,La Symphonie pastorale,
-20,Paul Valéry,Charmes,1922,,,,Charmes,
-20,Gaston Leroux,Le Mystère de la chambre jaune,1907,,,,Le Mystère de la chambre jaune,
+20,Paul Claudel,L'Annonce faite à Marie,1912,,,,L’Annonce faite à Marie,introuvable (BNR et Wikisource)
+20,André Gide,La Symphonie pastorale,1919,wikisource,https://fr.wikisource.org/wiki/La_Symphonie_pastorale,https://ws-export.wmcloud.org/?lang=fr&page=La+Symphonie+pastorale&format=epub-3,La Symphonie pastorale,ok
+20,Paul Valéry,Charmes,1922,wikisource,https://fr.wikisource.org/wiki/Charmes,https://ws-export.wmcloud.org/?lang=fr&page=Charmes&format=epub-3,Charmes,homonymie Wikisource : choisir une édition
+20,Gaston Leroux,Le Mystère de la chambre jaune,1907,wikisource,https://fr.wikisource.org/wiki/Le_Myst%C3%A8re_de_la_chambre_jaune,https://ws-export.wmcloud.org/?lang=fr&page=Le+Myst%C3%A8re+de+la+chambre+jaune&format=epub-3,Le Mystère de la chambre jaune,homonymie Wikisource : choisir une édition
 20,Maurice Leblanc,Arsène Lupin gentleman-cambrioleur,1907,bnr,https://ebooks-bnr.com/leblanc-maurice-arsene-lupin-gentleman-cambrioleur/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/leblanc_arsene_lupin_gentleman.epub,Arsène Lupin gentleman-cambrioleur,ok
 20,Louis Pergaud,La Guerre des boutons,1912,bnr,https://ebooks-bnr.com/pergaud-louis-la-guerre-des-boutons/,https://ebooks-bnr.com/?fdsb_dl=ebooks/epub/pergaud_guerre_de_boutons.epub,La Guerre des boutons,ok
-20,Raymond Radiguet,Le Diable au corps,1923,,,,Le Diable au corps,
+20,Raymond Radiguet,Le Diable au corps,1923,wikisource,https://fr.wikisource.org/wiki/Le_Diable_au_corps,https://ws-export.wmcloud.org/?lang=fr&page=Le+Diable+au+corps&format=epub-3,Le Diable au corps,ok
