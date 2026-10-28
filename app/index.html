@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classiques libres — Remplir une liseuse</title>
+<script>
+  // Navigateur d'une liseuse (Kobo, Cybook…) : version simplifiée sans JavaScript moderne.
+  if (/kobo|bookeen|cybook|odyssey/i.test(navigator.userAgent)) { location.replace("liseuse.html"); }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papier: #f6f1e7; --carte: #fffdf8; --encre: #1f2a37; --doux: #5d6672;
+    --accent: #8a2f3c; --accent-fonce: #6c2330; --vert: #2f6b4a; --vert-clair: #e3f0e7;
+    --ligne: #e3dccd; --alerte: #fdf0d8; --alerte-bord: #d9a43a;
+    --rayon: 14px; --ombre: 0 1px 2px rgba(31,42,55,.06), 0 6px 20px rgba(31,42,55,.06);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--papier); color: var(--encre); font: 18px/1.5 "Source Sans 3", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: Literata, Georgia, serif; line-height: 1.2; margin: 0; }
+  button { font: inherit; cursor: pointer; }
+  .page { max-width: 880px; margin: 0 auto; padding: 24px 16px 140px; }
+
+  /* En-tête */
+  header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+  .logo { width: 46px; height: 46px; border-radius: 12px; background: var(--accent); color: #fff;
+          display: grid; place-items: center; font: 700 24px Literata, serif; flex: none; }
+  header h1 { font-size: 26px; }
+  header p { margin: 0; color: var(--doux); font-size: 15px; }
+
+  /* Étapes */
+  .etapes { display: flex; gap: 8px; margin: 0 0 22px; padding: 0; list-style: none; }
+  .etapes li { flex: 1; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+               background: transparent; color: var(--doux); font-weight: 600; font-size: 15px; }
+  .etapes .pastille { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+                      border: 2px solid var(--ligne); background: var(--carte); flex: none; }
+  .etapes li.active { background: var(--carte); color: var(--encre); box-shadow: var(--ombre); }
+  .etapes li.active .pastille { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .etapes li.faite .pastille { background: var(--vert); border-color: var(--vert); color: #fff; }
+
+  .carte { background: var(--carte); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 26px; }
+  .carte + .carte { margin-top: 16px; }
+  .carte h2 { font-size: 28px; margin-bottom: 8px; }
+  .intro { color: var(--doux); margin: 0 0 20px; font-size: 19px; }
+
+  .gros-bouton { display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+                 min-height: 60px; padding: 0 28px; border: 0; border-radius: 14px; background: var(--accent);
+                 color: #fff; font-size: 20px; font-weight: 700; transition: background .15s, transform .05s; }
+  .gros-bouton:hover { background: var(--accent-fonce); }
+  .gros-bouton:active { transform: translateY(1px); }
+  .gros-bouton:disabled { background: #b9b2a6; cursor: not-allowed; }
+  .gros-bouton:focus-visible, .bouton:focus-visible { outline: 3px solid #e7b04a; outline-offset: 3px; }
+  .bouton { min-height: 44px; padding: 0 18px; border-radius: 10px; border: 2px solid var(--ligne);
+            background: var(--carte); color: var(--encre); font-weight: 600; font-size: 16px; }
+  .bouton:hover { border-color: var(--encre); }
+  .lien { background: none; border: 0; color: var(--accent); text-decoration: underline; padding: 0; font-weight: 600; }
+
+  /* Étape 1 */
+  .modeles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 6px 0 24px; }
+  .modele { border: 2px solid var(--ligne); border-radius: 12px; padding: 16px; }
+  .modele h3 { font-size: 19px; margin-bottom: 6px; }
+  .modele p { margin: 0; color: var(--doux); font-size: 16px; }
+  .astuce { display: flex; gap: 12px; background: var(--papier); border-radius: 12px; padding: 14px 16px;
+            margin-top: 22px; font-size: 16px; }
+  .astuce b { color: var(--encre); }
+  .astuce .ico { font-size: 22px; line-height: 1.2; }
+  .alerte { background: var(--alerte); border-left: 5px solid var(--alerte-bord); border-radius: 10px;
+            padding: 14px 16px; margin: 18px 0 0; font-size: 17px; }
+  .alerte.erreur { background: #fbe4e4; border-color: #c0392b; }
+
+  /* Étape 2 */
+  .appareil { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .appareil .badge { background: var(--vert-clair); color: var(--vert); font-weight: 700; padding: 6px 12px;
+                     border-radius: 999px; font-size: 15px; }
+  .appareil .format { color: var(--doux); font-size: 15px; flex: 1; min-width: 200px; }
+  .appareil .bouton { margin-left: auto; }
+  .raccourcis { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 6px; }
+  .recherche { width: 100%; min-height: 50px; border: 2px solid var(--ligne); border-radius: 12px;
+               padding: 0 16px; font: inherit; background: var(--carte); margin-top: 12px; }
+  .recherche:focus { outline: none; border-color: var(--encre); }
+  details.siecle { border-top: 1px solid var(--ligne); }
+  details.siecle:first-of-type { border-top: 0; }
+  details.siecle summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 16px 4px;
+                           cursor: pointer; }
+  details.siecle summary::-webkit-details-marker { display: none; }
+  .chevron { transition: transform .15s; color: var(--doux); width: 18px; flex: none; }
+  details[open] .chevron { transform: rotate(90deg); }
+  .siecle-titre { font: 700 20px Literata, Georgia, serif; flex: 1; }
+  .siecle-compte { color: var(--doux); font-size: 15px; }
+  .livres { list-style: none; margin: 0 0 12px; padding: 0; }
+  .livre label { display: flex; align-items: center; gap: 14px; padding: 10px 10px; border-radius: 10px; cursor: pointer; }
+  .livre label:hover { background: var(--papier); }
+  .livre input { width: 24px; height: 24px; accent-color: var(--accent); flex: none; }
+  .livre .t { font-weight: 700; display: block; }
+  .livre .a { color: var(--doux); font-size: 16px; }
+  .livre .poids { margin-left: auto; color: var(--doux); font-size: 14px; white-space: nowrap; }
+  .livre.present label { cursor: default; opacity: .75; }
+  .deja { background: var(--vert-clair); color: var(--vert); font-size: 13px; font-weight: 700; border-radius: 999px;
+          padding: 3px 10px; white-space: nowrap; margin-left: auto; }
+
+  .barre-action { position: fixed; left: 0; right: 0; bottom: 0; background: var(--carte);
+                  border-top: 1px solid var(--ligne); box-shadow: 0 -6px 20px rgba(31,42,55,.08); }
+  .barre-action .dedans { max-width: 880px; margin: 0 auto; padding: 14px 16px; display: flex; align-items: center; gap: 16px; }
+  .barre-action .resume { flex: 1; font-size: 17px; }
+  .barre-action .resume b { font-size: 20px; }
+
+  /* Étape 3 */
+  .jauge { height: 18px; background: var(--papier); border-radius: 999px; overflow: hidden; margin: 18px 0 10px; }
+  .jauge div { height: 100%; width: 0; background: var(--vert); transition: width .3s; }
+  .encours { color: var(--doux); }
+  .journal { list-style: none; padding: 0; margin: 18px 0 0; max-height: 260px; overflow: auto; font-size: 16px; }
+  .journal li { padding: 6px 0; border-bottom: 1px solid var(--ligne); }
+  .ok { color: var(--vert); font-weight: 700; } .ko { color: #c0392b; font-weight: 700; }
+  .fini { text-align: center; padding: 34px 26px; }
+  .fini .grand-ok { width: 84px; height: 84px; border-radius: 50%; background: var(--vert); color: #fff;
+                    display: grid; place-items: center; font-size: 46px; margin: 0 auto 16px; }
+  .ejecter { text-align: left; background: var(--alerte); border-radius: 12px; padding: 18px 20px; margin: 22px 0; }
+  .ejecter h3 { font-size: 20px; margin-bottom: 8px; }
+  .ejecter ol { margin: 0; padding-left: 22px; } .ejecter li { margin: 6px 0; }
+
+  .cache { display: none !important; }
+  footer { margin-top: 30px; color: var(--doux); font-size: 14px; text-align: center; }
+  footer a { color: inherit; }
+
+  @media (max-width: 640px) {
+    .modeles { grid-template-columns: 1fr; }
+    .etapes li span.lib { display: none; }
+    .barre-action .dedans { flex-direction: column; align-items: stretch; }
+    .carte { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="logo" aria-hidden="true">C</div>
+    <div>
+      <h1>Classiques libres</h1>
+      <p>Mettre des livres gratuits et libres de droits sur une liseuse — biblio.gironde</p>
+    </div>
+  </header>
+
+  <ol class="etapes" aria-label="Étapes">
+    <li id="e1" class="active"><span class="pastille">1</span><span class="lib">Brancher la liseuse</span></li>
+    <li id="e2"><span class="pastille">2</span><span class="lib">Choisir les livres</span></li>
+    <li id="e3"><span class="pastille">3</span><span class="lib">Copier</span></li>
+  </ol>
+
+  <!-- Navigateur non compatible -->
+  <section id="incompatible" class="carte cache">
+    <h2>Ouvrez cette page avec Chrome ou Edge</h2>
+    <p class="intro">Pour copier des livres sur une liseuse, cette page a besoin de <b>Google Chrome</b> ou de
+      <b>Microsoft Edge</b>, sur un ordinateur (Mac ou Windows). Firefox, Safari, les tablettes et les téléphones
+      ne le permettent pas.</p>
+    <p>Vous êtes sur la liseuse elle-même ? <a href="liseuse.html">Ouvrez la version pour liseuse</a> pour télécharger les livres un par un.</p>
+  </section>
+
+  <!-- Étape 1 -->
+  <section id="etape1" class="carte">
+    <h2>Branchez la liseuse à l'ordinateur</h2>
+    <p class="intro">Allumez la liseuse, puis reliez-la à l'ordinateur avec son câble USB.</p>
+    <div class="modeles">
+      <div class="modele"><h3>Kobo</h3><p>Sur l'écran de la liseuse, touchez <b>Connecter</b>.</p></div>
+      <div class="modele"><h3>Cybook</h3><p>Si la liseuse pose une question, acceptez la <b>connexion à l'ordinateur</b>.</p></div>
+    </div>
+    <button id="btnConnecter" class="gros-bouton">J'ai branché la liseuse</button>
+    <div class="astuce">
+      <span class="ico" aria-hidden="true">💡</span>
+      <div>Une fenêtre va s'ouvrir. Dans la colonne de gauche, cliquez sur le nom de la liseuse
+        (par exemple <b>KOBOeReader</b>), puis sur <b>Sélectionner</b> ou <b>Ouvrir</b>.
+        Le navigateur demande ensuite la permission de modifier les fichiers : cliquez sur <b>Modifier les fichiers</b>.</div>
+    </div>
+    <div id="msg1" class="alerte cache"></div>
+  </section>
+
+  <!-- Choix manuel du modèle -->
+  <section id="choixModele" class="carte cache">
+    <h2>Quelle liseuse avez-vous branchée ?</h2>
+    <p class="intro" id="choixTexte"></p>
+    <div class="raccourcis">
+      <button class="gros-bouton" data-modele="kobo">Une Kobo</button>
+      <button class="gros-bouton" data-modele="cybook">Une Cybook</button>
+      <button class="bouton" data-modele="autre">Une autre liseuse</button>
+    </div>
+    <p style="margin-top:18px"><button class="lien" id="btnRechoisir">Je me suis trompé de dossier, choisir à nouveau</button></p>
+  </section>
+
+  <!-- Étape 2 -->
+  <section id="etape2" class="cache">
+    <div class="carte">
+      <div class="appareil">
+        <span class="badge" id="nomAppareil">Liseuse détectée</span>
+        <span class="format" id="infoFormat"></span>
+        <button class="bouton" id="btnChanger">Changer de liseuse</button>
+      </div>
+    </div>
+    <div class="carte">
+      <h2>Choisissez les livres</h2>
+      <p class="intro" id="introChoix">Cochez les livres à mettre sur la liseuse.</p>
+      <div class="raccourcis">
+        <button class="bouton" id="btnTout">Tout cocher</button>
+        <button class="bouton" id="btnRien">Tout décocher</button>
+      </div>
+      <input class="recherche" id="recherche" type="search" placeholder="Rechercher un titre ou un auteur…" aria-label="Rechercher">
+      <div id="listeSiecles" style="margin-top:8px"></div>
+    </div>
+  </section>
+
+  <!-- Étape 3 -->
+  <section id="etape3" class="carte cache">
+    <div id="copieEnCours">
+      <h2>Copie en cours…</h2>
+      <p class="intro">Ne débranchez pas la liseuse et ne fermez pas cette page.</p>
+      <div class="jauge"><div id="jauge"></div></div>
+      <p class="encours" id="encours"></p>
+      <ul class="journal" id="journal"></ul>
+    </div>
+    <div id="copieFinie" class="fini cache">
+      <div class="grand-ok" aria-hidden="true">✓</div>
+      <h2 id="finiTitre">C'est terminé !</h2>
+      <p class="intro" id="finiTexte"></p>
+      <div id="finiErreurs" class="alerte erreur cache" style="text-align:left"></div>
+      <div class="ejecter">
+        <h3>Dernière étape : éjecter la liseuse</h3>
+        <ol id="ejecterEtapes"></ol>
+      </div>
+      <button class="gros-bouton" id="btnAutre">Remplir une autre liseuse</button>
+    </div>
+  </section>
+
+  <footer>
+    Textes du domaine public, fichiers issus de Wikisource (licence CC BY-SA).
+    <a href="liseuse.html">Version pour navigateur de liseuse</a> ·
+    <a href="opds.xml">Catalogue OPDS</a>
+  </footer>
+</div>
+
+<div class="barre-action cache" id="barreAction">
+  <div class="dedans">
+    <div class="resume" id="resume"><b>0 livre</b> sélectionné</div>
+    <button class="gros-bouton" id="btnCopier" disabled>Copier sur la liseuse</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+const DOSSIER = "Classiques libres";
+const $ = (id) => document.getElementById(id);
+const etat = { catalogue: null, racine: null, modele: null, presents: new Set(), coches: new Set(), copieEnCours: false };
+
+/* ---------- Utilitaires ---------- */
+const mo = (o) => o >= 1048576 ? (o / 1048576).toFixed(1).replace(".", ",") + " Mo" : Math.max(1, Math.round(o / 1024)) + " Ko";
+const pluriel = (n, mot) => `${n} ${mot}${n > 1 ? "s" : ""}`;
+const normaliser = (t) => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const echapper = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const estMac = /Mac/i.test(navigator.platform || navigator.userAgent);
+
+function afficher(...ids) {
+  for (const id of ["incompatible", "etape1", "choixModele", "etape2", "etape3", "barreAction"]) $(id).classList.add("cache");
+  for (const id of ids) $(id).classList.remove("cache");
+}
+function etapeActive(n) {
+  [1, 2, 3].forEach((i) => {
+    $("e" + i).classList.toggle("active", i === n);
+    $("e" + i).classList.toggle("faite", i < n);
+    $("e" + i).querySelector(".pastille").textContent = i < n ? "✓" : i;
+  });
+}
+function message(texte, erreur = false) {
+  const m = $("msg1");
+  m.innerHTML = texte;
+  m.classList.toggle("erreur", erreur);
+  m.classList.remove("cache");
+}
+
+/* Format envoyé selon la liseuse : KEPUB pour Kobo (s'il existe), EPUB sinon. */
+function versionPour(livre) {
+  if (etat.modele === "kobo" && livre.kepub) return { url: livre.kepub, nom: livre.fichierKepub, taille: livre.tailleKepub };
+  return { url: livre.epub, nom: livre.fichier, taille: livre.taille };
+}
+function estPresent(livre) {
+  return etat.presents.has(livre.fichier) || (livre.fichierKepub && etat.presents.has(livre.fichierKepub));
+}
+
+/* ---------- Démarrage ---------- */
+async function demarrer() {
+  if (!("showDirectoryPicker" in window)) { afficher("incompatible"); return; }
+  try {
+    const r = await fetch("catalogue.json", { cache: "no-cache" });
+    etat.catalogue = await r.json();
+  } catch (e) {
+    message("Impossible de charger la liste des livres. Vérifiez la connexion Internet puis rechargez la page.", true);
+    $("btnConnecter").disabled = true;
+  }
+}
+
+/* ---------- Étape 1 : connexion et détection ---------- */
+async function existe(dossier, nom, type = "dir") {
+  try {
+    return type === "dir" ? await dossier.getDirectoryHandle(nom) : await dossier.getFileHandle(nom);
+  } catch { return null; }
+}
+
+async function detecter(racine) {
+  const kobo = await existe(racine, ".kobo");
+  if (kobo) {
+    let detail = "";
+    const v = await existe(kobo, "version", "file");
+    if (v) {
+      try {
+        const champs = (await (await v.getFile()).text()).trim().split(",");
+        if (champs[2]) detail = ` (logiciel ${champs[2]})`;
+      } catch { /* sans importance */ }
+    }
+    return { modele: "kobo", nom: "Kobo détectée" + detail };
+  }
+  if (/cybook|odyssey|bookeen/i.test(racine.name)) return { modele: "cybook", nom: "Cybook détectée" };
+  for (const indice of [".bookeen", "Bookeen", "Digital Editions"]) {
+    if (await existe(racine, indice)) return { modele: "cybook", nom: "Cybook détectée" };
+  }
+  return null;
+}
+
+async function lirePresents() {
+  etat.presents = new Set();
+  const d = await existe(etat.racine, DOSSIER);
+  if (!d) return;
+  for await (const [nom] of d.entries()) etat.presents.add(nom);
+}
+
+async function connecter() {
+  $("msg1").classList.add("cache");
+  let racine;
+  try {
+    racine = await window.showDirectoryPicker({ id: "liseuse", mode: "readwrite" });
+  } catch (e) {
+    if (e.name === "AbortError") return;
+    message("Le navigateur a refusé ce dossier. Choisissez bien le <b>nom de la liseuse</b> dans la colonne de gauche " +
+            "(par exemple KOBOeReader), et non un dossier de l'ordinateur.", true);
+    return;
+  }
+  if ((await racine.queryPermission({ mode: "readwrite" })) !== "granted" &&
+      (await racine.requestPermission({ mode: "readwrite" })) !== "granted") {
+    message("Sans la permission de modifier les fichiers, la page ne peut pas copier les livres. Réessayez et cliquez sur <b>Modifier les fichiers</b>.", true);
+    return;
+  }
+  etat.racine = racine;
+  const trouve = await detecter(racine);
+  if (trouve) { choisirModele(trouve.modele, trouve.nom); return; }
+  $("choixTexte").innerHTML = `Le dossier choisi s'appelle « <b>${echapper(racine.name)}</b> ». Nous n'avons pas reconnu ` +
+    `automatiquement la liseuse. S'il s'agit bien de votre liseuse, indiquez son modèle ; sinon, choisissez à nouveau.`;
+  afficher("choixModele");
+}
+
+async function choisirModele(modele, nom) {
+  etat.modele = modele;
+  const libelles = { kobo: "Kobo", cybook: "Cybook", autre: "Liseuse" };
+  $("nomAppareil").textContent = nom || `${libelles[modele]} sélectionnée`;
+  const kepubDispo = etat.catalogue.livres.some((l) => l.kepub);
+  $("infoFormat").textContent = modele === "kobo" && kepubDispo
+    ? "Les livres seront copiés au format Kobo (KEPUB), plus fluide à lire."
+    : "Les livres seront copiés au format EPUB.";
+  await lirePresents();
+  etat.coches = new Set();
+  construireListe();
+  etapeActive(2);
+  afficher("etape2", "barreAction");
+  window.scrollTo(0, 0);
+}
+
+/* ---------- Étape 2 : choix des livres ---------- */
+function construireListe() {
+  const { siecles, livres } = etat.catalogue;
+  const nbPresents = livres.filter(estPresent).length;
+  $("introChoix").textContent = nbPresents
+    ? `${pluriel(nbPresents, "livre")} ${nbPresents > 1 ? "sont" : "est"} déjà sur la liseuse. Cochez ceux que vous voulez ajouter.`
+    : "Cochez les livres à mettre sur la liseuse, ou cliquez sur « Tout cocher ».";
+  const html = Object.entries(siecles).map(([s, libelle], i) => {
+    const liste = livres.filter((l) => l.siecle === s);
+    const items = liste.map((l) => {
+      const p = estPresent(l), v = versionPour(l), id = "l-" + encodeURIComponent(l.fichier);
+      return `<li class="livre${p ? " present" : ""}" data-cherche="${echapper(normaliser(l.titre + " " + l.auteur))}">
+        <label for="${id}">
+          <input type="checkbox" id="${id}" data-fichier="${echapper(l.fichier)}" ${p ? "disabled" : ""}>
+          <span><span class="t">${echapper(l.titre)}</span><span class="a">${echapper(l.auteur)} · ${echapper(l.annee)}</span></span>
+          ${p ? '<span class="deja">Déjà sur la liseuse</span>' : `<span class="poids">${mo(v.taille)}</span>`}
+        </label></li>`;
+    }).join("");
+    return `<details class="siecle" data-siecle="${s}" ${i === 0 ? "open" : ""}>
+      <summary><svg class="chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+        <span class="siecle-titre">${echapper(libelle)}</span>
+        <span class="siecle-compte">${pluriel(liste.length, "livre")}</span>
+        <button class="bouton" data-tout="${s}" type="button">Tout ce siècle</button></summary>
+      <ul class="livres">${items}</ul></details>`;
+  }).join("");
+  $("listeSiecles").innerHTML = html || '<p class="alerte">Le catalogue est en cours de constitution : revenez bientôt !</p>';
+  majResume();
+}
+
+function livreParFichier(f) { return etat.catalogue.livres.find((l) => l.fichier === f); }
+
+function majResume() {
+  const sel = [...etat.coches].map(livreParFichier);
+  const total = sel.reduce((t, l) => t + versionPour(l).taille, 0);
+  $("resume").innerHTML = sel.length
+    ? `<b>${pluriel(sel.length, "livre")}</b> sélectionné${sel.length > 1 ? "s" : ""} · ${mo(total)}`
+    : "<b>Aucun livre</b> sélectionné";
+  $("btnCopier").disabled = !sel.length;
+  $("btnCopier").textContent = sel.length ? `Copier ${pluriel(sel.length, "livre")}` : "Copier sur la liseuse";
+  document.querySelectorAll("#listeSiecles input[data-fichier]").forEach((c) => { c.checked = etat.coches.has(c.dataset.fichier); });
+}
+
+function cocher(livres, valeur) {
+  livres.filter((l) => !estPresent(l)).forEach((l) => valeur ? etat.coches.add(l.fichier) : etat.coches.delete(l.fichier));
+  majResume();
+}
+
+/* ---------- Étape 3 : copie ---------- */
+async function copier() {
+  const aCopier = [...etat.coches].map(livreParFichier);
+  if (!aCopier.length) return;
+  etat.copieEnCours = true;
+  etapeActive(3);
+  afficher("etape3");
+  $("copieEnCours").classList.remove("cache");
+  $("copieFinie").classList.add("cache");
+  $("journal").innerHTML = "";
+  window.scrollTo(0, 0);
+
+  const erreurs = [];
+  let faits = 0;
+  let dossier;
+  try {
+    dossier = await etat.racine.getDirectoryHandle(DOSSIER, { create: true });
+  } catch (e) {
+    terminer(0, [{ livre: null, erreur: "Impossible d'écrire sur la liseuse. Est-elle toujours branchée ?" }]);
+    return;
+  }
+  for (const [i, livre] of aCopier.entries()) {
+    const v = versionPour(livre);
+    $("encours").textContent = `Livre ${i + 1} sur ${aCopier.length} : ${livre.titre} — ${livre.auteur}`;
+    const ligne = document.createElement("li");
+    try {
+      const rep = await fetch(v.url);
+      if (!rep.ok) throw new Error("téléchargement impossible (" + rep.status + ")");
+      const fichier = await dossier.getFileHandle(v.nom, { create: true });
+      const flux = await fichier.createWritable();
+      await rep.body.pipeTo(flux);
+      faits++;
+      etat.presents.add(v.nom);
+      ligne.innerHTML = `<span class="ok">✓</span> ${echapper(livre.titre)} <span class="a">— ${echapper(livre.auteur)}</span>`;
+    } catch (e) {
+      erreurs.push({ livre, erreur: e.message || String(e) });
+      ligne.innerHTML = `<span class="ko">✗</span> ${echapper(livre.titre)} — ${echapper(e.message || e)}`;
+      if (e.name === "NotFoundError" || e.name === "InvalidStateError") {
+        erreurs.push({ livre: null, erreur: "La liseuse semble avoir été débranchée : copie interrompue." });
+        $("journal").prepend(ligne);
+        break;
+      }
+    }
+    $("journal").prepend(ligne);
+    $("jauge").style.width = ((i + 1) / aCopier.length * 100) + "%";
+  }
+  terminer(faits, erreurs);
+}
+
+function terminer(faits, erreurs) {
+  etat.copieEnCours = false;
+  etat.coches = new Set();
+  $("copieEnCours").classList.add("cache");
+  $("copieFinie").classList.remove("cache");
+  if (faits) etapeActive(4);
+  $("finiTitre").textContent = faits ? "C'est terminé !" : "La copie n'a pas abouti";
+  document.querySelector(".grand-ok").classList.toggle("cache", !faits);
+  $("finiTexte").textContent = faits ? `${pluriel(faits, "livre")} ${faits > 1 ? "ont été copiés" : "a été copié"} sur la liseuse.` : "";
+  if (erreurs.length) {
+    $("finiErreurs").innerHTML = "<b>Certains livres n'ont pas pu être copiés :</b><ul>" +
+      erreurs.map((e) => `<li>${e.livre ? echapper(e.livre.titre) + " : " : ""}${echapper(e.erreur)}</li>`).join("") +
+      "</ul>Vous pouvez relancer la copie : les livres déjà présents seront ignorés.";
+    $("finiErreurs").classList.remove("cache");
+  } else $("finiErreurs").classList.add("cache");
+  const nom = etat.racine ? etat.racine.name : "la liseuse";
+  const etapes = estMac
+    ? [`Dans le Finder, cliquez sur le petit triangle d'éjection ⏏ à côté de <b>${echapper(nom)}</b>.`]
+    : [`En bas à droite de l'écran, cliquez sur l'icône de clé USB, puis sur <b>Éjecter ${echapper(nom)}</b>.`,
+       "Attendez le message « Le matériel peut être retiré en toute sécurité »."];
+  etapes.push("Débranchez le câble.");
+  if (etat.modele === "kobo") etapes.push("La Kobo affiche « Importation du contenu » : patientez. Les livres sont ensuite dans <b>Bibliothèque › Livres</b>.");
+  else etapes.push("Les nouveaux livres apparaissent dans la bibliothèque de la liseuse après quelques secondes.");
+  $("ejecterEtapes").innerHTML = etapes.map((t) => `<li>${t}</li>`).join("");
+}
+
+function recommencer() {
+  etat.racine = null; etat.modele = null; etat.coches = new Set();
+  $("jauge").style.width = "0";
+  etapeActive(1);
+  afficher("etape1");
+  window.scrollTo(0, 0);
+}
+
+/* ---------- Événements ---------- */
+$("btnConnecter").addEventListener("click", connecter);
+$("btnRechoisir").addEventListener("click", () => { afficher("etape1"); connecter(); });
+document.querySelectorAll("[data-modele]").forEach((b) => b.addEventListener("click", () => choisirModele(b.dataset.modele)));
+$("btnChanger").addEventListener("click", recommencer);
+$("btnAutre").addEventListener("click", recommencer);
+$("btnTout").addEventListener("click", () => cocher(etat.catalogue.livres, true));
+$("btnRien").addEventListener("click", () => cocher(etat.catalogue.livres, false));
+$("btnCopier").addEventListener("click", copier);
+$("listeSiecles").addEventListener("change", (e) => {
+  const f = e.target.dataset.fichier;
+  if (!f) return;
+  e.target.checked ? etat.coches.add(f) : etat.coches.delete(f);
+  majResume();
+});
+$("listeSiecles").addEventListener("click", (e) => {
+  const s = e.target.dataset.tout;
+  if (!s) return;
+  e.preventDefault();
+  const liste = etat.catalogue.livres.filter((l) => l.siecle === s && !estPresent(l));
+  const toutCoche = liste.length && liste.every((l) => etat.coches.has(l.fichier));
+  cocher(liste, !toutCoche);
+});
+$("recherche").addEventListener("input", (e) => {
+  const q = normaliser(e.target.value.trim());
+  document.querySelectorAll("details.siecle").forEach((d) => {
+    let visibles = 0;
+    d.querySelectorAll(".livre").forEach((li) => {
+      const ok = !q || li.dataset.cherche.includes(q);
+      li.classList.toggle("cache", !ok);
+      if (ok) visibles++;
+    });
+    d.classList.toggle("cache", !visibles);
+    if (q && visibles) d.open = true;
+  });
+});
+window.addEventListener("beforeunload", (e) => { if (etat.copieEnCours) { e.preventDefault(); e.returnValue = ""; } });
+
+demarrer();
+</script>
+</body>
+</html>

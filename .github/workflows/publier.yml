@@ -1,0 +1,56 @@
+name: Publier le catalogue
+
+on:
+  push:
+    branches: [main]
+    paths: ["epub/**", "catalogue.csv", "scripts/**", ".github/workflows/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer kepubify (conversion au format Kobo)
+        run: |
+          curl -sSL -o /usr/local/bin/kepubify \
+            https://github.com/pgaskin/kepubify/releases/latest/download/kepubify-linux-64bit
+          chmod +x /usr/local/bin/kepubify
+          kepubify --version
+
+      - name: Construire la webapp, le flux OPDS et les packs ZIP
+        run: python3 scripts/construire.py
+
+      - name: Enregistrer SOURCES.md s'il a changé
+        run: |
+          if ! git diff --quiet SOURCES.md; then
+            git config user.name "github-actions"
+            git config user.email "github-actions@users.noreply.github.com"
+            git add SOURCES.md
+            git commit -m "Mise à jour de SOURCES.md"
+            git push
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploiement
+        uses: actions/deploy-pages@v4
