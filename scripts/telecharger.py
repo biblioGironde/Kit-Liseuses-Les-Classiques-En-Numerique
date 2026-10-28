@@ -2,34 +2,43 @@
 """
 Téléchargement en lot des EPUB du catalogue.
 
-Source par défaut : Wikisource (licence CC BY-SA), via le service d'export
-officiel WS Export. Pour un titre, on peut aussi donner une URL directe
-d'EPUB dans la colonne « url » du catalogue (Bibliothèque numérique romande…).
+Ordre de priorité des sources, pour chaque titre :
+  1. un lien direct déjà connu (colonne « url » de catalogue.csv) ;
+  2. la Bibliothèque numérique romande (ebooks-bnr.com) : EPUB soignés et relus ;
+  3. Wikisource, via le service d'export officiel WS Export.
+
+Quand la BNR publie une œuvre en plusieurs tomes (Les Misérables…), chaque tome
+devient une ligne du catalogue et un fichier séparé.
 
 Utilisation :
-    python3 scripts/telecharger.py              # télécharge tout ce qui manque
-    python3 scripts/telecharger.py --siecle 19  # un seul siècle
-    python3 scripts/telecharger.py --verifier   # vérifie les pages sans télécharger
-    python3 scripts/telecharger.py --forcer     # retélécharge même si le fichier existe
+    python3 scripts/telecharger.py               # télécharge tout ce qui manque
+    python3 scripts/telecharger.py --siecle 19   # un seul siècle
+    python3 scripts/telecharger.py --verifier    # cherche les sources sans rien télécharger
+    python3 scripts/telecharger.py --forcer      # retélécharge même si le fichier existe
+    python3 scripts/telecharger.py --source wikisource   # ignorer la BNR
 
 Aucune dépendance : Python 3.8+ suffit.
 """
 import argparse
+import html
+import io
 import json
+import re
 import sys
 import time
 import zipfile
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 
-from commun import chemin_epub, ecrire_catalogue, lire_catalogue
+from commun import chemin_epub, ecrire_catalogue, lire_catalogue, sans_accents
 
-API = "https://fr.wikisource.org/w/api.php"
+BNR = "https://ebooks-bnr.com/"
+API_WS = "https://fr.wikisource.org/w/api.php"
 WSEXPORT = "https://ws-export.wmcloud.org/"
 UA = "Kit-Les-Classiques-En-Numerique/1.0 (biblio.gironde ; https://github.com/biblioGironde/Kit-Les-Classiques-En-Numerique)"
 TAILLE_MIN = 15_000   # en dessous : probablement une page d'homonymie ou un sommaire vide
-PAUSE = 3             # secondes entre deux téléchargements, par politesse
+PAUSE = 3             # secondes entre deux téléchargements, par politesse envers les sites
 
 
 def requete(url, timeout=180):
@@ -38,33 +47,100 @@ def requete(url, timeout=180):
         return r.read()
 
 
-def api(**params):
+def norm(texte):
+    return re.sub(r"[^a-z0-9]+", " ", sans_accents(texte).lower()).strip()
+
+
+def sans_article(texte):
+    """« le tartuffe » → « tartuffe », « l avare » → « avare »."""
+    return re.sub(r"^(le|la|les|l|un|une) ", "", texte)
+
+
+def nom_auteur(auteur):
+    """Dernier mot du nom : « Victor Hugo » → « hugo »."""
+    return norm(auteur).split(" ")[-1]
+
+
+# ---------------------------------------------------------------- BNR
+
+def bnr_chercher(requete_texte):
+    """Résultats de la recherche BNR : liste de (titre affiché, page, lien EPUB)."""
+    page = requete(BNR + "?" + urlencode({"s": requete_texte}), timeout=60).decode("utf-8", "replace")
+    resultats = []
+    for bloc in page.split("<article")[1:]:
+        t = re.search(r'class="entry-title[^"]*"[^>]*>\s*<a href="([^"]+)"[^>]*>(.*?)</a>', bloc, re.S)
+        e = re.search(r'href="(https://ebooks-bnr\.com/\?fdsb_dl=ebooks/epub/[^"]+\.epub)"', bloc)
+        if t and e:
+            titre = html.unescape(re.sub(r"<[^>]+>", "", t.group(2))).strip()
+            resultats.append((titre, t.group(1), html.unescape(e.group(1))))
+    return resultats
+
+
+def bnr_correspond(ligne, titre_affiche):
+    """Les titres BNR sont de la forme « Hugo Victor – Les Misérables (tome 1) »."""
+    if " – " not in titre_affiche:
+        return None
+    auteur_bnr, titre_bnr = titre_affiche.split(" – ", 1)
+    if ligne["auteur"] != "Anonyme" and nom_auteur(ligne["auteur"]) not in norm(auteur_bnr):
+        return None
+    tome = re.search(r"\(\s*tome\s*(\d+)\s*\)", titre_bnr, re.I)
+    sans_tome = sans_article(norm(re.sub(r"\(\s*tome.*$", "", titre_bnr, flags=re.I)))
+    cible = sans_article(norm(ligne["titre"]))
+    if sans_tome == cible or sans_tome.startswith(cible + " "):
+        return int(tome.group(1)) if tome else 0
+    return None
+
+
+def bnr_trouver(ligne):
+    """Renvoie la liste des (tome, titre affiché, page, epub) correspondant au titre."""
+    mots = [m for m in norm(ligne["titre"]).split() if len(m) > 3]
+    requetes = [ligne["titre"]]
+    if mots:
+        requetes.append(f"{nom_auteur(ligne['auteur'])} {mots[0]}")
+    for q in requetes:
+        trouves, vus = [], set()
+        for titre, page, epub in bnr_chercher(q):
+            tome = bnr_correspond(ligne, titre)
+            if tome is not None and epub not in vus:
+                vus.add(epub)
+                trouves.append((tome, titre, page, epub))
+        if trouves:
+            return sorted(trouves)
+        time.sleep(1)
+    return []
+
+
+# ---------------------------------------------------------- Wikisource
+
+def ws_api(**params):
     params.update(format="json", formatversion="2")
-    return json.loads(requete(API + "?" + urlencode(params), timeout=60))
+    return json.loads(requete(API_WS + "?" + urlencode(params), timeout=60))
 
 
-def resoudre(ligne):
-    """Trouve la page Wikisource. Renvoie (titre_de_page, statut)."""
-    titre_ws = ligne["wikisource"]
-    if titre_ws:
-        d = api(action="query", titles=titre_ws, redirects=1, prop="pageprops")
-        page = d["query"]["pages"][0]
-        if not page.get("missing"):
-            if "disambiguation" in page.get("pageprops", {}):
-                return page["title"], "homonymie : choisir une édition"
-            return page["title"], "ok"
-    # Repli : recherche plein texte « titre auteur »
-    d = api(action="query", list="search", srnamespace=0, srlimit=3,
-            srsearch=f'intitle:"{ligne["titre"]}" {ligne["auteur"]}')
+def ws_trouver(ligne):
+    """Renvoie (titre de page, statut)."""
+    if ligne["wikisource"]:
+        d = ws_api(action="query", titles=ligne["wikisource"], redirects=1, prop="pageprops")
+        p = d["query"]["pages"][0]
+        if not p.get("missing"):
+            if "disambiguation" in p.get("pageprops", {}):
+                return p["title"], "homonymie Wikisource : choisir une édition"
+            return p["title"], "ok"
+    d = ws_api(action="query", list="search", srnamespace=0, srlimit=3,
+               srsearch=f'intitle:"{ligne["titre"]}" {ligne["auteur"]}')
     res = d["query"]["search"]
     if res:
-        return res[0]["title"], "trouvé par recherche : à vérifier"
-    return None, "introuvable sur Wikisource"
+        return res[0]["title"], "trouvé par recherche Wikisource : à vérifier"
+    return None, "introuvable"
 
+
+def ws_url(page, fmt):
+    return WSEXPORT + "?" + urlencode({"lang": "fr", "page": page, "format": fmt})
+
+
+# ------------------------------------------------------------ Commun
 
 def epub_valide(donnees):
-    """Vérifie qu'on a bien reçu un EPUB (archive ZIP avec le bon mimetype)."""
-    import io
     try:
         with zipfile.ZipFile(io.BytesIO(donnees)) as z:
             return z.read("mimetype").strip() == b"application/epub+zip"
@@ -72,11 +148,7 @@ def epub_valide(donnees):
         return False
 
 
-def telecharger(ligne, page, fmt):
-    if ligne["url"]:
-        url = ligne["url"]
-    else:
-        url = WSEXPORT + "?" + urlencode({"lang": "fr", "page": page, "format": fmt})
+def telecharger(url):
     for essai in range(3):
         try:
             return requete(url)
@@ -87,75 +159,132 @@ def telecharger(ligne, page, fmt):
             time.sleep(10)
 
 
+def resoudre(ligne, args):
+    """Complète source/page/url de la ligne. Renvoie la liste des lignes (plusieurs si tomes)."""
+    if ligne["url"]:
+        ligne["statut"] = ligne["statut"] or "lien direct"
+        return [ligne]
+    if args.source in ("auto", "bnr"):
+        try:
+            trouves = bnr_trouver(ligne)
+        except Exception as e:
+            trouves = []
+            print(f"      BNR injoignable ({e})")
+        if trouves:
+            if len(trouves) == 1:
+                _, titre, page, epub = trouves[0]
+                ligne.update(source="bnr", page=page, url=epub, statut="ok")
+                print(f"      BNR : {titre}")
+                return [ligne]
+            print(f"      BNR : {len(trouves)} tomes")
+            tomes = []
+            for tome, titre, page, epub in trouves:
+                l = dict(ligne)
+                l.update(titre=f"{ligne['titre']} (tome {tome})" if tome else ligne["titre"],
+                         source="bnr", page=page, url=epub, statut="ok")
+                tomes.append(l)
+                print(f"        • {titre}")
+            return tomes
+        if args.source == "bnr":
+            ligne["statut"] = "absent de la BNR"
+            return [ligne]
+    page, statut = ws_trouver(ligne)
+    if page:
+        ligne.update(source="wikisource", wikisource=page, statut=statut,
+                     page="https://fr.wikisource.org/wiki/" + quote(page.replace(" ", "_")),
+                     url=ws_url(page, args.format))
+        print(f"      Wikisource : {page}" + ("" if statut == "ok" else f"  ({statut})"))
+    else:
+        ligne["statut"] = "introuvable (BNR et Wikisource)"
+    return [ligne]
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--siecle", help="ne traiter qu'un siècle (15 à 20)")
-    p.add_argument("--verifier", action="store_true", help="vérifier les pages sans télécharger")
+    p.add_argument("--verifier", action="store_true", help="chercher les sources sans télécharger")
     p.add_argument("--forcer", action="store_true", help="retélécharger les fichiers existants")
-    p.add_argument("--format", default="epub-3", help="format WS Export (epub-3 par défaut, epub-2 pour les très vieilles liseuses)")
+    p.add_argument("--source", choices=["auto", "bnr", "wikisource"], default="auto",
+                   help="auto (BNR puis Wikisource, par défaut), bnr seule, ou wikisource seule")
+    p.add_argument("--format", default="epub-3", help="format WS Export (epub-3, ou epub-2 pour les très vieilles liseuses)")
     args = p.parse_args()
 
-    lignes = lire_catalogue()
-    a_traiter = [l for l in lignes if not args.siecle or l["siecle"] == args.siecle]
-    bilan = {"ok": 0, "deja": 0, "probleme": []}
+    catalogue = lire_catalogue()
+    nouveau, problemes, traitees = [], [], []
+    compte = {"ok": 0, "deja": 0}
+    a_traiter = [l for l in catalogue if not args.siecle or l["siecle"] == args.siecle]
 
-    for i, l in enumerate(a_traiter, 1):
-        cible = chemin_epub(l)
-        print(f"[{i}/{len(a_traiter)}] {l['auteur']} — {l['titre']}")
-        if cible.exists() and not args.forcer and not args.verifier:
+    for i, l in enumerate(catalogue):
+        if l not in a_traiter:
+            nouveau.append(l)
+            continue
+        n = a_traiter.index(l) + 1
+        print(f"[{n}/{len(a_traiter)}] {l['auteur']} — {l['titre']}")
+        if chemin_epub(l).exists() and not args.forcer and not args.verifier:
             print("      déjà présent")
-            bilan["deja"] += 1
+            compte["deja"] += 1
+            nouveau.append(l)
             continue
+        if args.forcer and l["source"] == "wikisource":
+            l["url"] = ""  # on retente la BNR en priorité
         try:
-            page, statut = (None, "url directe") if l["url"] else resoudre(l)
+            lignes = resoudre(l, args)
         except Exception as e:
-            page, statut = None, f"erreur réseau : {e}"
-        if page:
-            print(f"      page Wikisource : {page}  ({statut})")
-            l["wikisource"] = page
-        l["statut"] = statut
-        if page is None and not l["url"]:
-            print(f"      ✗ {statut}")
-            bilan["probleme"].append((l, statut))
-            continue
-        if args.verifier:
-            if statut != "ok":
-                bilan["probleme"].append((l, statut))
-            continue
-        try:
-            donnees = telecharger(l, page, args.format)
-        except Exception as e:
-            l["statut"] = f"échec du téléchargement : {e}"
-            print(f"      ✗ {l['statut']}")
-            bilan["probleme"].append((l, l["statut"]))
-            continue
-        if not epub_valide(donnees):
-            l["statut"] = "fichier reçu invalide"
-            print("      ✗ le fichier reçu n'est pas un EPUB")
-            bilan["probleme"].append((l, l["statut"]))
-            continue
-        if len(donnees) < TAILLE_MIN:
-            l["statut"] = "EPUB très petit : vérifier la page (sommaire ou homonymie ?)"
-            bilan["probleme"].append((l, l["statut"]))
-        cible.parent.mkdir(parents=True, exist_ok=True)
-        cible.write_bytes(donnees)
-        print(f"      ✓ {cible.name} ({len(donnees) // 1024} Ko)")
-        if l["statut"] in ("ok", "url directe"):
-            bilan["ok"] += 1
-        elif len(donnees) >= TAILLE_MIN:
-            bilan["probleme"].append((l, "téléchargé, " + l["statut"]))
-        time.sleep(PAUSE)
+            l["statut"] = f"erreur réseau : {e}"
+            lignes = [l]
+        nouveau.extend(lignes)
+        traitees.extend(lignes)
 
-    ecrire_catalogue(lignes)
+        for x in lignes:
+            if not x["url"]:
+                problemes.append((x, x["statut"]))
+                print(f"      ✗ {x['statut']}")
+                continue
+            if x["statut"] not in ("ok", "lien direct"):
+                problemes.append((x, x["statut"]))
+            if args.verifier:
+                continue
+            cible = chemin_epub(x)
+            if cible.exists() and not args.forcer:
+                compte["deja"] += 1
+                continue
+            try:
+                donnees = telecharger(x["url"])
+            except Exception as e:
+                x["statut"] = f"échec du téléchargement : {e}"
+                problemes.append((x, x["statut"]))
+                print(f"      ✗ {x['statut']}")
+                continue
+            if not epub_valide(donnees):
+                x["statut"] = "fichier reçu invalide"
+                problemes.append((x, x["statut"]))
+                print("      ✗ le fichier reçu n'est pas un EPUB")
+                continue
+            if len(donnees) < TAILLE_MIN:
+                x["statut"] = "EPUB très petit : vérifier la source (sommaire ou homonymie ?)"
+                problemes.append((x, x["statut"]))
+            cible.parent.mkdir(parents=True, exist_ok=True)
+            cible.write_bytes(donnees)
+            compte["ok"] += 1
+            print(f"      ✓ {cible.name} ({len(donnees) // 1024} Ko, {x['source']})")
+            time.sleep(PAUSE)
 
+    ecrire_catalogue(nouveau)
+
+    sources = {}
+    for x in traitees:
+        cle = x["source"] or "aucune"
+        sources[cle] = sources.get(cle, 0) + 1
     print("\n=== Bilan ===")
-    print(f"Téléchargés : {bilan['ok']}   Déjà présents : {bilan['deja']}   À vérifier : {len(bilan['probleme'])}")
-    for l, statut in bilan["probleme"]:
-        print(f"  • {l['auteur']} — {l['titre']} : {statut}")
-    if bilan["probleme"]:
-        print("\nCorrigez la colonne « wikisource » (titre exact de la page) ou « url » dans catalogue.csv,")
-        print("puis relancez avec --forcer --siecle XX.")
-    return 1 if bilan["probleme"] else 0
+    print(f"Téléchargés : {compte['ok']}   Déjà présents : {compte['deja']}   À vérifier : {len(problemes)}")
+    print("Sources : " + ", ".join(f"{k} {v}" for k, v in sorted(sources.items())))
+    for x, statut in problemes:
+        print(f"  • {x['auteur']} — {x['titre']} : {statut}")
+    if problemes:
+        print("\nPour corriger : mettez dans catalogue.csv le lien direct de l'EPUB (colonne « url »)")
+        print("ou le titre exact de la page Wikisource (colonne « wikisource »), puis relancez")
+        print("avec --forcer --siecle XX.")
+    return 1 if problemes else 0
 
 
 if __name__ == "__main__":

@@ -573,7 +573,7 @@ async function choisirModele(modele, nom) {
   $("nomAppareil").textContent = nom || `${libelles[modele]} sélectionnée`;
   const kepubDispo = etat.catalogue.livres.some((l) => l.kepub);
   $("infoFormat").textContent = modele === "kobo" && kepubDispo
-    ? "Les livres seront copiés au format Kobo (KEPUB), plus fluide à lire."
+    ? "Les livres seront copiés au format Kobo (KEPUB) quand il existe, sinon en EPUB."
     : "Les livres seront copiés au format EPUB.";
   await lirePresents();
   etat.coches = new Set();

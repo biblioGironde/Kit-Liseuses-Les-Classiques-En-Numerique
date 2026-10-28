@@ -38,7 +38,7 @@ y sont déjà sont signalés et ne sont pas recopiés.
 catalogue.csv          la liste des titres (à modifier pour ajouter un livre)
 epub/15 … epub/20      les fichiers EPUB, rangés par siècle
 app/index.html         la webapp
-scripts/telecharger.py téléchargement en lot depuis Wikisource
+scripts/telecharger.py téléchargement en lot (BNR d'abord, puis Wikisource)
 scripts/construire.py  génère le site : webapp, catalogue.json, KEPUB, OPDS, ZIP
 SOURCES.md             provenance et licence de chaque titre (généré)
 ```
@@ -47,19 +47,33 @@ SOURCES.md             provenance et licence de chaque titre (généré)
 
 Il faut Python 3.8 ou plus récent, sans bibliothèque à installer.
 
+Le script cherche chaque titre dans cet ordre :
+
+1. **lien direct** déjà indiqué dans la colonne `url` de `catalogue.csv` ;
+2. **[Bibliothèque numérique romande](https://ebooks-bnr.com)** (BNR), dont les EPUB sont relus
+   et soignés. Quand la BNR publie une œuvre en plusieurs tomes (*Les Misérables*…), chaque
+   tome devient une ligne du catalogue et un fichier séparé ;
+3. **Wikisource**, en dernier recours.
+
 ```bash
-python3 scripts/telecharger.py --verifier   # contrôle les titres Wikisource, sans rien télécharger
-python3 scripts/telecharger.py              # télécharge tous les EPUB manquants
-python3 scripts/telecharger.py --siecle 19  # un seul siècle
+python3 scripts/telecharger.py --verifier            # cherche les sources sans rien télécharger
+python3 scripts/telecharger.py                       # télécharge tous les EPUB manquants
+python3 scripts/telecharger.py --siecle 19           # un seul siècle
+python3 scripts/telecharger.py --forcer              # retélécharge tout (et retente la BNR
+                                                     #  pour les titres venus de Wikisource)
+python3 scripts/telecharger.py --source wikisource   # sans la BNR
 ```
 
-Pour chaque titre signalé « à vérifier », ouvrez la page sur https://fr.wikisource.org,
-copiez son titre exact dans la colonne `wikisource` de `catalogue.csv` (ou mettez un
-lien direct vers un EPUB dans la colonne `url`), puis relancez avec `--forcer --siecle XX`.
+Le script remplit lui-même les colonnes `source`, `page` et `url` du catalogue et
+affiche un bilan. Pour chaque titre signalé « à vérifier », mettez le lien direct de
+l'EPUB dans la colonne `url` (sur la BNR : clic droit sur le bouton EPUB › copier
+l'adresse du lien) ou le titre exact de la page Wikisource dans la colonne
+`wikisource`, puis relancez avec `--forcer --siecle XX`.
 
 Il suffit ensuite de pousser sur `main` : l'action GitHub convertit les livres au
 format Kobo (avec [kepubify](https://github.com/pgaskin/kepubify)), reconstruit et
-publie la webapp.
+publie la webapp. Les livres de la BNR ne sont pas convertis : ses conditions
+demandent de les diffuser sans modification, les Kobo reçoivent donc l'EPUB d'origine.
 
 Tester en local :
 
@@ -93,7 +107,11 @@ ou sans usage commercial. Indiquez le lien direct dans la colonne `url` de
 ## Droits
 
 - Les œuvres sont dans le domaine public en France (auteurs morts depuis plus de 70 ans).
-- Les EPUB issus de Wikisource sont sous licence CC BY-SA 4.0 : la source est indiquée
+- Les EPUB de la **BNR** peuvent être utilisés librement, **sans modification**, en indiquant
+  la source ; leur partie éditoriale (notes, présentation, maquette) ne peut pas servir à
+  des fins commerciales sans l'accord de l'association Les Bourlapapey. Ils sont diffusés
+  tels quels, avec leur source dans `SOURCES.md`.
+- Les EPUB issus de **Wikisource** sont sous licence CC BY-SA 4.0 : la source est indiquée
   dans `SOURCES.md` et dans chaque fichier.
 - GitHub étant hébergé aux États-Unis, le catalogue se limite aux œuvres publiées
   avant 1931, libres aussi là-bas.

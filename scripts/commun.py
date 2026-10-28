@@ -7,7 +7,9 @@ from pathlib import Path
 RACINE = Path(__file__).resolve().parent.parent
 CATALOGUE = RACINE / "catalogue.csv"
 DOSSIER_EPUB = RACINE / "epub"
-COLONNES = ["siecle", "auteur", "titre", "annee", "wikisource", "url", "statut"]
+# source : « bnr » (Bibliothèque numérique romande), « wikisource » ou « autre »
+# page : fiche du livre sur le site source ; url : lien direct vers l'EPUB
+COLONNES = ["siecle", "auteur", "titre", "annee", "source", "page", "url", "wikisource", "statut"]
 
 SIECLES = {
     "15": "XVe siècle — fin du Moyen Âge",
@@ -22,8 +24,8 @@ SIECLES = {
 def sans_accents(texte):
     """Supprime accents et caractères spéciaux (noms de fichiers sûrs pour les vieilles liseuses)."""
     texte = texte.replace("œ", "oe").replace("Œ", "Oe").replace("æ", "ae")
+    texte = re.sub(r"[’‘'`]", " ", texte)
     texte = unicodedata.normalize("NFKD", texte).encode("ascii", "ignore").decode()
-    texte = re.sub(r"[’'`]", " ", texte)
     texte = re.sub(r"[^A-Za-z0-9 \-]", "", texte)
     return re.sub(r"\s+", " ", texte).strip()
 
