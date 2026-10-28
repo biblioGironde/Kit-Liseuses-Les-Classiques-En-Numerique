@@ -127,7 +127,31 @@
   /* Fenêtre « navigateur incompatible » */
   dialog#modalNavigateur { border: 0; border-radius: 18px; padding: 30px 28px 22px; max-width: 540px; width: calc(100% - 32px);
     background: var(--carte); color: var(--encre); box-shadow: 0 20px 60px rgba(31,42,55,.3); }
-  dialog#modalNavigateur::backdrop { background: rgba(31,42,55,.55); }
+  dialog#modalNavigateur::backdrop, dialog#modalCatalogue::backdrop { background: rgba(31,42,55,.55); }
+  dialog#modalCatalogue { border: 0; border-radius: 18px; padding: 0; max-width: 720px; width: calc(100% - 32px);
+    max-height: calc(100vh - 48px); background: var(--carte); color: var(--encre); box-shadow: 0 20px 60px rgba(31,42,55,.3); }
+  dialog#modalCatalogue[open] { display: flex; flex-direction: column; }
+  dialog#modalCatalogue.secours { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); z-index: 100; margin: 0; }
+  .cat-entete { padding: 24px 26px 14px; border-bottom: 1px solid var(--ligne); }
+  .cat-entete h2 { font-size: 26px; padding-right: 48px; }
+  .cat-entete p { margin: 4px 0 12px; color: var(--doux); font-size: 16px; }
+  .cat-fermer { position: absolute; top: 16px; right: 16px; width: 44px; height: 44px; border-radius: 50%; border: 0;
+    background: var(--papier); color: var(--encre); font-size: 26px; line-height: 1; }
+  .cat-fermer:hover { background: var(--ligne); }
+  .cat-puces { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cat-puces button { border: 2px solid var(--ligne); background: var(--carte); border-radius: 999px; padding: 5px 14px;
+    font-size: 15px; font-weight: 600; color: var(--encre); }
+  .cat-puces button:hover { border-color: var(--encre); }
+  .cat-corps { overflow: auto; padding: 4px 26px 20px; }
+  .cat-siecle h3 { font-size: 21px; margin: 20px 0 6px; padding-bottom: 6px; border-bottom: 2px solid var(--accent); }
+  .cat-siecle ul { list-style: none; margin: 0; padding: 0; }
+  .cat-siecle li { padding: 8px 0; border-bottom: 1px solid var(--ligne); display: flex; gap: 12px; align-items: baseline; }
+  .cat-siecle li:last-child { border-bottom: 0; }
+  .cat-siecle .t { font-weight: 700; } .cat-siecle .a { color: var(--doux); font-size: 16px; }
+  .cat-siecle .an { margin-left: auto; color: var(--doux); font-size: 14px; white-space: nowrap; }
+  .cat-pied { padding: 14px 26px; border-top: 1px solid var(--ligne); text-align: right; }
+  .actions-etape1 { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .actions-etape1 .bouton { min-height: 60px; font-size: 18px; padding: 0 22px; }
   dialog#modalNavigateur.secours { display: block; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 100; margin: 0; }
   .voile { position: fixed; inset: 0; background: rgba(31,42,55,.55); z-index: 99; }
   .modal-ico { width: 56px; height: 56px; border-radius: 50%; background: var(--alerte); border: 3px solid var(--alerte-bord);
@@ -178,8 +202,23 @@
       <b>Microsoft Edge</b>, sur un ordinateur (Mac ou Windows). Firefox, Safari, les tablettes et les téléphones
       ne le permettent pas.</p>
     <p>Vous êtes sur la liseuse elle-même ? <a href="liseuse.html">Ouvrez la version pour liseuse</a> pour télécharger les livres un par un.</p>
-    <button class="gros-bouton" type="button" id="btnRevoirModal">Comment faire ?</button>
+    <div class="actions-etape1">
+      <button class="gros-bouton" type="button" id="btnRevoirModal">Comment faire ?</button>
+      <button class="bouton btnVoirLivres" type="button">📚 Voir les livres disponibles</button>
+    </div>
   </section>
+
+  <!-- Fenêtre : liste des livres disponibles -->
+  <dialog id="modalCatalogue" aria-labelledby="catTitre">
+    <div class="cat-entete" style="position:relative">
+      <h2 id="catTitre">Les livres disponibles</h2>
+      <p id="catResume"></p>
+      <div class="cat-puces" id="catPuces"></div>
+      <button class="cat-fermer" type="button" id="btnFermerCatalogue" aria-label="Fermer">×</button>
+    </div>
+    <div class="cat-corps" id="catCorps"></div>
+    <div class="cat-pied"><button class="gros-bouton" type="button" id="btnFermerCatalogue2" style="min-height:50px;font-size:18px">Fermer</button></div>
+  </dialog>
 
   <!-- Fenêtre : navigateur incompatible -->
   <dialog id="modalNavigateur" aria-labelledby="modalTitre">
@@ -213,7 +252,10 @@
       <div class="modele"><h3>Kobo</h3><p>Sur l'écran de la liseuse, touchez <b>Connecter</b>.</p></div>
       <div class="modele"><h3>Cybook</h3><p>Si la liseuse pose une question, acceptez la <b>connexion à l'ordinateur</b>.</p></div>
     </div>
-    <button id="btnConnecter" class="gros-bouton">J'ai branché la liseuse</button>
+    <div class="actions-etape1">
+      <button id="btnConnecter" class="gros-bouton">J'ai branché la liseuse</button>
+      <button class="bouton btnVoirLivres" type="button">📚 Voir les livres disponibles</button>
+    </div>
     <div class="astuce">
       <span class="ico" aria-hidden="true">💡</span>
       <div>Une fenêtre va s'ouvrir. Dans la colonne de gauche, cliquez sur le nom de la liseuse
@@ -380,6 +422,40 @@ function preparerModal(nav) {
   $("modalEtapes").innerHTML = etapes.map((t) => `<li>${t}</li>`).join("");
 }
 
+function ouvrirDialogue(d) {
+  if (typeof d.showModal === "function") { if (!d.open) d.showModal(); }
+  else {
+    d.classList.add("secours"); d.setAttribute("open", "");
+    if (!document.querySelector(".voile")) { const v = document.createElement("div"); v.className = "voile"; document.body.appendChild(v); }
+  }
+}
+function fermerDialogue(d) {
+  if (typeof d.close === "function" && d.open) d.close();
+  d.classList.remove("secours"); d.removeAttribute("open");
+  const v = document.querySelector(".voile"); if (v) v.remove();
+}
+
+function remplirCatalogue() {
+  const c = etat.catalogue;
+  if (!c || !c.livres.length) {
+    $("catResume").textContent = "";
+    $("catPuces").innerHTML = "";
+    $("catCorps").innerHTML = '<p class="alerte">Le catalogue est en cours de constitution : revenez bientôt !</p>';
+    return;
+  }
+  const siecles = Object.entries(c.siecles);
+  $("catResume").textContent = `${pluriel(c.livres.length, "livre")} libres de droits, du ${siecles[0][1].split(" ")[0]} au ${siecles[siecles.length - 1][1].split(" ")[0]} siècle.`;
+  $("catPuces").innerHTML = siecles.map(([s, lib]) =>
+    `<button type="button" data-aller="${s}">${echapper(lib.split(" —")[0])}</button>`).join("");
+  $("catCorps").innerHTML = siecles.map(([s, lib]) => {
+    const liste = c.livres.filter((l) => l.siecle === s);
+    return `<section class="cat-siecle" id="cat-${s}"><h3>${echapper(lib)} <span class="a">· ${pluriel(liste.length, "livre")}</span></h3><ul>` +
+      liste.map((l) => `<li><span><span class="t">${echapper(l.titre)}</span><br><span class="a">${echapper(l.auteur)}</span></span>` +
+        `<span class="an">${echapper(l.annee)}</span></li>`).join("") + "</ul></section>";
+  }).join("");
+}
+function ouvrirCatalogue() { remplirCatalogue(); $("catCorps").scrollTop = 0; ouvrirDialogue($("modalCatalogue")); }
+
 function ouvrirModal() {
   const d = $("modalNavigateur");
   if (typeof d.showModal === "function") { if (!d.open) d.showModal(); }
@@ -407,7 +483,18 @@ async function copierAdresse() {
   setTimeout(() => { b.textContent = "Copier l'adresse de la page"; }, 2500);
 }
 
+async function chargerCatalogue() {
+  try {
+    const r = await fetch("catalogue.json", { cache: "no-cache" });
+    etat.catalogue = await r.json();
+    const n = etat.catalogue.livres.length;
+    document.querySelectorAll(".btnVoirLivres").forEach((b) => { if (n) b.textContent = `📚 Voir les ${n} livres disponibles`; });
+    return true;
+  } catch (e) { return false; }
+}
+
 async function demarrer() {
+  const charge = await chargerCatalogue();
   const nav = analyserNavigateur();
   if (!nav.compatible) {
     preparerModal(nav);
@@ -416,10 +503,7 @@ async function demarrer() {
     ouvrirModal();
     return;
   }
-  try {
-    const r = await fetch("catalogue.json", { cache: "no-cache" });
-    etat.catalogue = await r.json();
-  } catch (e) {
+  if (!charge) {
     message("Impossible de charger la liste des livres. Vérifiez la connexion Internet puis rechargez la page.", true);
     $("btnConnecter").disabled = true;
   }
@@ -631,6 +715,15 @@ function recommencer() {
 
 /* ---------- Événements ---------- */
 $("btnConnecter").addEventListener("click", connecter);
+document.querySelectorAll(".btnVoirLivres").forEach((b) => b.addEventListener("click", ouvrirCatalogue));
+$("btnFermerCatalogue").addEventListener("click", () => fermerDialogue($("modalCatalogue")));
+$("btnFermerCatalogue2").addEventListener("click", () => fermerDialogue($("modalCatalogue")));
+$("modalCatalogue").addEventListener("click", (e) => { if (e.target.id === "modalCatalogue") fermerDialogue(e.target); });
+$("catPuces").addEventListener("click", (e) => {
+  const s = e.target.dataset.aller; if (!s) return;
+  const cible = $("cat-" + s);
+  $("catCorps").scrollTo({ top: cible.offsetTop - $("catCorps").offsetTop, behavior: "smooth" });
+});
 $("btnCopierAdresse").addEventListener("click", copierAdresse);
 $("btnFermerModal").addEventListener("click", fermerModal);
 $("btnRevoirModal").addEventListener("click", ouvrirModal);
