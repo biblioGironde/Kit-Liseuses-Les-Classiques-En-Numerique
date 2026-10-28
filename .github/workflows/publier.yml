@@ -3,7 +3,7 @@ name: Publier le catalogue
 on:
   push:
     branches: [main]
-    paths: ["epub/**", "catalogue.csv", "scripts/**", ".github/workflows/**"]
+    paths: ["app/**", "epub/**", "catalogue.csv", "scripts/**", ".github/workflows/**"]
   workflow_dispatch:
 
 permissions:
@@ -40,10 +40,10 @@ jobs:
 
       - name: Enregistrer SOURCES.md s'il a changé
         run: |
-          if ! git diff --quiet SOURCES.md; then
+          git add SOURCES.md
+          if ! git diff --cached --quiet; then
             git config user.name "github-actions"
             git config user.email "github-actions@users.noreply.github.com"
-            git add SOURCES.md
             git commit -m "Mise à jour de SOURCES.md"
             git push
           fi
