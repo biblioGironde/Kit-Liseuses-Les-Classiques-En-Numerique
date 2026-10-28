@@ -62,6 +62,55 @@ def nom_auteur(auteur):
 
 
 # ---------------------------------------------------------------- BNR
+# Deux façons de trouver un livre sur la BNR :
+#  1. l'index alphabétique des titres (ebooks-bnr.com/par/titres/), le plus fiable ;
+#  2. la recherche du site, qui trouve aussi les œuvres publiées en plusieurs tomes.
+
+RE_EPUB = r'https://ebooks-bnr\.com/\?fdsb_dl=ebooks/[a-z0-9]+/[^"]+?\.epub'
+PAGES_HORS_LIVRES = ("par", "nuage", "nos-ebooks", "informations", "contact", "categories",
+                     "recherche", "coups-de-coeur", "donation", "politique", "wp-")
+SUITES_ADMISES = ("ou ", "et ", "a la recherche")  # « Candide ou l'Optimisme », « Zadig et autres contes »
+_index_bnr = None
+
+
+def cle_titre(titre):
+    """Clé de comparaison : sans tome, sans article (même placé à la fin : « Avare (L') »)."""
+    t = re.sub(r"\(\s*tome[^)]*\)", " ", titre, flags=re.I)
+    t = re.sub(r"\(\s*(le|la|les|l[’']|un|une)\s*\)", " ", t, flags=re.I)
+    t = t.split(" – ")[0]  # « Du Côté de chez Swann – À la recherche du temps perdu 1 »
+    return sans_article(norm(t))
+
+
+def titre_correspond(cible, candidat):
+    if candidat == cible:
+        return True
+    return candidat.startswith(cible + " ") and candidat[len(cible) + 1:].startswith(SUITES_ADMISES)
+
+
+def tome_de(titre):
+    m = re.search(r"tome\s*(\d+)", titre, re.I)
+    return int(m.group(1)) if m else 0
+
+
+def bnr_index():
+    """Index des titres de la BNR : liste de (titre, page). Chargé une seule fois."""
+    global _index_bnr
+    if _index_bnr is None:
+        page = requete(BNR + "par/titres/", timeout=120).decode("utf-8", "replace")
+        page = page.split("<article", 1)[-1]
+        _index_bnr = []
+        for url, slug, texte in re.findall(r'<a href="(https://ebooks-bnr\.com/([a-z0-9-]+)/)"[^>]*>(.*?)</a>', page, re.S):
+            if not slug.startswith(PAGES_HORS_LIVRES):
+                _index_bnr.append((html.unescape(re.sub(r"<[^>]+>", "", texte)).strip(), url))
+        print(f"      (index BNR : {len(_index_bnr)} titres)")
+    return _index_bnr
+
+
+def bnr_epub_de_page(url):
+    page = requete(url, timeout=60).decode("utf-8", "replace")
+    m = re.search(RE_EPUB, page.split("<article", 1)[-1])
+    return html.unescape(m.group(0)) if m else None
+
 
 def bnr_chercher(requete_texte):
     """Résultats de la recherche BNR : liste de (titre affiché, page, lien EPUB)."""
@@ -69,41 +118,40 @@ def bnr_chercher(requete_texte):
     resultats = []
     for bloc in page.split("<article")[1:]:
         t = re.search(r'class="entry-title[^"]*"[^>]*>\s*<a href="([^"]+)"[^>]*>(.*?)</a>', bloc, re.S)
-        e = re.search(r'href="(https://ebooks-bnr\.com/\?fdsb_dl=ebooks/epub/[^"]+\.epub)"', bloc)
+        e = re.search(RE_EPUB, bloc)
         if t and e:
             titre = html.unescape(re.sub(r"<[^>]+>", "", t.group(2))).strip()
-            resultats.append((titre, t.group(1), html.unescape(e.group(1))))
+            resultats.append((titre, t.group(1), html.unescape(e.group(0))))
     return resultats
 
 
-def bnr_correspond(ligne, titre_affiche):
-    """Les titres BNR sont de la forme « Hugo Victor – Les Misérables (tome 1) »."""
-    if " – " not in titre_affiche:
-        return None
-    auteur_bnr, titre_bnr = titre_affiche.split(" – ", 1)
-    if ligne["auteur"] != "Anonyme" and nom_auteur(ligne["auteur"]) not in norm(auteur_bnr):
-        return None
-    tome = re.search(r"\(\s*tome\s*(\d+)\s*\)", titre_bnr, re.I)
-    sans_tome = sans_article(norm(re.sub(r"\(\s*tome.*$", "", titre_bnr, flags=re.I)))
-    cible = sans_article(norm(ligne["titre"]))
-    if sans_tome == cible or sans_tome.startswith(cible + " "):
-        return int(tome.group(1)) if tome else 0
-    return None
-
-
 def bnr_trouver(ligne):
-    """Renvoie la liste des (tome, titre affiché, page, epub) correspondant au titre."""
+    """Renvoie la liste des (tome, titre BNR, page, epub) correspondant au titre."""
+    cible = sans_article(norm(ligne["titre"]))
+    nom = nom_auteur(ligne["auteur"])
+    anonyme = ligne["auteur"] == "Anonyme"
+
+    # 1. Index des titres : l'auteur est vérifié dans l'adresse de la page (« balzac-honore-de-… »)
+    trouves = []
+    for titre, page in bnr_index():
+        if titre_correspond(cible, cle_titre(titre)) and (anonyme or nom.replace(" ", "-") in page):
+            epub = bnr_epub_de_page(page)
+            if epub:
+                trouves.append((tome_de(titre), titre, page, epub))
+    if trouves:
+        return sorted(set(trouves))
+
+    # 2. Recherche du site (titres de la forme « Hugo Victor – Les Misérables (tome 1) »)
     mots = [m for m in norm(ligne["titre"]).split() if len(m) > 3]
-    requetes = [ligne["titre"]]
-    if mots:
-        requetes.append(f"{nom_auteur(ligne['auteur'])} {mots[0]}")
-    for q in requetes:
-        trouves, vus = [], set()
+    for q in [ligne["titre"]] + ([f"{nom} {mots[-1]}"] if mots else []):
+        vus = set()
         for titre, page, epub in bnr_chercher(q):
-            tome = bnr_correspond(ligne, titre)
-            if tome is not None and epub not in vus:
+            if " – " not in titre or epub in vus:
+                continue
+            auteur_bnr, titre_bnr = titre.split(" – ", 1)
+            if (anonyme or nom in norm(auteur_bnr)) and titre_correspond(cible, cle_titre(titre_bnr)):
                 vus.add(epub)
-                trouves.append((tome, titre, page, epub))
+                trouves.append((tome_de(titre_bnr), titre, page, epub))
         if trouves:
             return sorted(trouves)
         time.sleep(1)
