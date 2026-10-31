@@ -6,6 +6,11 @@ du réseau (Kobo, Cybook…).
 
 **Webapp :** https://bibliogironde.github.io/Kit-Les-Classiques-En-Numerique/
 
+🎧 **Version audio :** les livres audio libres de droits de ces classiques (enregistrements
+LibriVox, à écouter en ligne ou à copier sur un lecteur MP3) sont dans le dépôt
+[Kit-Liseuses-Les-Classiques-En-Numerique-Audio](https://github.com/biblioGironde/Kit-Liseuses-Les-Classiques-En-Numerique-Audio) —
+webapp : https://bibliogironde.github.io/Kit-Liseuses-Les-Classiques-En-Numerique-Audio/
+
 ## Remplir une liseuse (mode d'emploi express)
 
 1. Ouvrir la webapp avec **Chrome** ou **Edge** sur un ordinateur.
@@ -93,7 +98,9 @@ Pour compléter le catalogue ou trouver d'autres textes du domaine public :
 * [Wikisource](https://fr.wikisource.org) a des textes établis d’après les éditions originales et permet un export EPUB à la volée.
 * [Gallica (BnF)](https://gallica.bnf.fr) donne accès aux éditions originales numérisées. C’est idéal pour la médiation, par exemple pour montrer la première édition de *Madame Bovary*.
 * [Bibebook](https://www.bibebook.com) et [Project Gutenberg](https://www.gutenberg.org/browse/languages/fr) sont deux bons compléments.
-* [Littérature audio](https://www.litteratureaudio.com) propose des versions lues gratuitement, utiles pour l’accessibilité.
+* Pour les versions lues, voir le dépôt [Kit-Liseuses-Les-Classiques-En-Numerique-Audio](https://github.com/biblioGironde/Kit-Liseuses-Les-Classiques-En-Numerique-Audio)
+  (enregistrements LibriVox du domaine public). [Littérature audio](https://www.litteratureaudio.com) propose aussi
+  des lectures gratuites, mais elles restent la propriété de leurs lecteurs : à écouter, pas à redistribuer.
 * [Bibliothèque électronique du Québec](https://beq.ebooksgratuits.com) propose environ 2 800 volumes en EPUB, PDF (dont une version pour liseuses) et MOBI.
   ⚠️ Elle suit le droit canadien, où une œuvre devenait libre 50 ans après la mort de l'auteur (70 ans en France) :
   **vérifiez que l'auteur est mort avant 1956**. Aucune licence de redistribution n'est affichée : à utiliser
