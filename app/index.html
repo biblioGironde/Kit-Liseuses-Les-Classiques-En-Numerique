@@ -31,6 +31,12 @@
           display: grid; place-items: center; font: 700 24px Literata, serif; flex: none; }
   header h1 { font-size: 26px; }
   header p { margin: 0; color: var(--doux); font-size: 15px; }
+  header > div:nth-child(2) { flex: 1; }
+  .lien-audio { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: var(--encre);
+                border: 2px solid var(--ligne); background: var(--carte); border-radius: 10px; padding: 8px 14px;
+                font-weight: 600; font-size: 16px; }
+  .lien-audio:hover { border-color: var(--encre); }
+  @media (max-width: 640px) { header { flex-wrap: wrap; } }
 
   /* Étapes */
   .etapes { display: flex; gap: 8px; margin: 0 0 22px; padding: 0; list-style: none; }
@@ -187,6 +193,7 @@
       <h1>Classiques libres</h1>
       <p>Mettre des livres gratuits et libres de droits sur une liseuse — biblio.gironde</p>
     </div>
+    <a class="lien-audio" href="https://bibliogironde.github.io/Kit-Liseuses-Les-Classiques-En-Numerique-Audio/" target="_blank" rel="noopener">🎧 Les versions audio</a>
   </header>
 
   <ol class="etapes" aria-label="Étapes">
@@ -323,7 +330,8 @@
   <footer>
     Textes du domaine public, fichiers issus de Wikisource (licence CC BY-SA).
     <a href="liseuse.html">Version pour navigateur de liseuse</a> ·
-    <a href="opds.xml">Catalogue OPDS</a>
+    <a href="opds.xml">Catalogue OPDS</a> ·
+    <a href="https://bibliogironde.github.io/Kit-Liseuses-Les-Classiques-En-Numerique-Audio/" target="_blank" rel="noopener">Écouter ces classiques en livres audio</a>
   </footer>
 </div>
 
