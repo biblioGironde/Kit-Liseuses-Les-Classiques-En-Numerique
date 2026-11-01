@@ -122,6 +122,9 @@
     <section><h3>Police</h3><div class="rangee">
       <button data-police="serif" style="font-family:Literata,Georgia,serif">Avec empattements</button>
       <button data-police="sans">Sans empattements</button></div></section>
+    <section><h3>Alignement</h3><div class="rangee">
+      <button data-alignement="gauche">Fer à gauche</button>
+      <button data-alignement="justifie">Justifié</button></div></section>
   </div>
 
   <button class="tourner" id="prec" aria-label="Page précédente"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
@@ -145,7 +148,7 @@ const cle = "lecteur:" + chemin;
 const lire = (k, d) => { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } };
 const ecrire = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* navigation privée */ } };
 const echapper = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const prefs = Object.assign({ theme: "clair", taille: 100, police: "serif" }, lire("lecteur:prefs", {}));
+const prefs = Object.assign({ theme: "clair", taille: 100, police: "serif", alignement: "gauche" }, lire("lecteur:prefs", {}));
 
 // « !important » : certains EPUB imposent leurs propres couleurs
 const theme = (texte, fond, lien) => ({
@@ -192,6 +195,7 @@ async function ouvrir() {
 
   rendition = book.renderTo("lecture", { width: "100%", height: "100%", flow: "paginated", spread: "auto", minSpreadWidth: 900, allowScriptedContent: false });
   Object.entries(THEMES).forEach(([nom, css]) => rendition.themes.register(nom, css));
+  rendition.hooks.content.register((contents) => aligner(contents));
   appliquerPrefs();
 
   const position = lire(cle, null);
@@ -249,20 +253,44 @@ function construireSommaire(toc) {
 }
 
 /* ---------- Réglages ---------- */
+// Fer à gauche : seuls les paragraphes justifiés par le livre passent à gauche,
+// les titres et vers centrés ou alignés à droite gardent leur mise en page.
+function aligner(contents) {
+  const doc = contents && contents.document;
+  if (!doc || !doc.body) return;
+  const vue = doc.defaultView;
+  doc.body.querySelectorAll("*").forEach((el) => {
+    if (el.dataset.justifie === undefined) {
+      if (vue.getComputedStyle(el).textAlign !== "justify") return;
+      el.dataset.justifie = "";
+    }
+    if (prefs.alignement === "gauche") {
+      el.style.setProperty("text-align", "left", "important");
+      el.style.setProperty("hyphens", "manual", "important");
+    } else {
+      el.style.removeProperty("text-align");
+      el.style.removeProperty("hyphens");
+    }
+  });
+}
+
 function appliquerPrefs() {
   document.documentElement.dataset.theme = prefs.theme;
   if (rendition) {
     rendition.themes.select(prefs.theme);
     rendition.themes.fontSize(prefs.taille + "%");
     rendition.themes.font(prefs.police === "serif" ? "Literata, Georgia, serif" : "'Source Sans 3', Helvetica, Arial, sans-serif");
+    rendition.getContents().forEach(aligner);
   }
   $("taille").textContent = prefs.taille + " %";
   document.querySelectorAll("[data-choix]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.choix === prefs.theme));
   document.querySelectorAll("[data-police]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.police === prefs.police));
+  document.querySelectorAll("[data-alignement]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.alignement === prefs.alignement));
   ecrire("lecteur:prefs", prefs);
 }
 document.querySelectorAll("[data-choix]").forEach((b) => b.addEventListener("click", () => { prefs.theme = b.dataset.choix; appliquerPrefs(); }));
 document.querySelectorAll("[data-police]").forEach((b) => b.addEventListener("click", () => { prefs.police = b.dataset.police; appliquerPrefs(); }));
+document.querySelectorAll("[data-alignement]").forEach((b) => b.addEventListener("click", () => { prefs.alignement = b.dataset.alignement; appliquerPrefs(); }));
 $("plus").addEventListener("click", () => { prefs.taille = Math.min(200, prefs.taille + 10); appliquerPrefs(); });
 $("moins").addEventListener("click", () => { prefs.taille = Math.max(70, prefs.taille - 10); appliquerPrefs(); });
 
