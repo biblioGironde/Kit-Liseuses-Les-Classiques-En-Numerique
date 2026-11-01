@@ -30,6 +30,21 @@ La webapp reconnaît la liseuse et envoie le bon format :
 Les livres sont copiés dans un dossier `Classiques libres` sur la liseuse. Ceux qui
 y sont déjà sont signalés et ne sont pas recopiés.
 
+## Lire un livre dans le navigateur
+
+Dans la webapp, le bouton **« Voir les livres disponibles »** liste le catalogue ; le
+bouton **« Lire »** ouvre le livre dans un lecteur intégré (`lecteur.html`), sans liseuse
+ni installation, sur ordinateur, tablette ou téléphone :
+
+- pages à tourner (flèches, clavier ou glissement du doigt), barre de progression ;
+- sommaire et recherche dans le texte ;
+- thèmes clair, sépia et sombre, taille et police du texte réglables ;
+- mode lecture sans distraction, téléchargement de l'EPUB ;
+- la page de lecture et les réglages sont mémorisés dans le navigateur.
+
+Le lecteur s'appuie sur [epub.js](https://github.com/futurepress/epub.js) et n'ouvre que
+les livres du site.
+
 Également publiés :
 
 - `liseuse.html` : version très légère à ouvrir dans le navigateur d'une liseuse
@@ -43,6 +58,7 @@ y sont déjà sont signalés et ne sont pas recopiés.
 catalogue.csv          la liste des titres (à modifier pour ajouter un livre)
 epub/15 … epub/20      les fichiers EPUB, rangés par siècle
 app/index.html         la webapp
+app/lecteur.html       le lecteur EPUB intégré
 scripts/telecharger.py téléchargement en lot (BNR d'abord, puis Wikisource)
 scripts/construire.py  génère le site : webapp, catalogue.json, KEPUB, OPDS, ZIP
 SOURCES.md             provenance et licence de chaque titre (généré)
