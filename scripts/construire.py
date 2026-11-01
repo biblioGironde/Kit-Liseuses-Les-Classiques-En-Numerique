@@ -238,7 +238,9 @@ def main():
     construire_opds(par_siecle)
     construire_kepub(par_siecle)
     construire_json(par_siecle)
-    shutil.copy2(RACINE / "app" / "index.html", SITE / "index.html")
+    for f in (RACINE / "app").iterdir():  # webapp et lecteur
+        if f.is_file():
+            shutil.copy2(f, SITE / f.name)
     ecrire_sources(par_siecle)
     (SITE / ".nojekyll").touch()
 

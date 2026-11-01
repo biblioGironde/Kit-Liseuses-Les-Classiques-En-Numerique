@@ -141,6 +141,7 @@
   .cat-entete { padding: 24px 26px 14px; border-bottom: 1px solid var(--ligne); }
   .cat-entete h2 { font-size: 26px; padding-right: 48px; }
   .cat-entete p { margin: 4px 0 12px; color: var(--doux); font-size: 16px; }
+  .cat-entete p.cat-astuce { margin-top: -8px; font-size: 15px; }
   .cat-fermer { position: absolute; top: 16px; right: 16px; width: 44px; height: 44px; border-radius: 50%; border: 0;
     background: var(--papier); color: var(--encre); font-size: 26px; line-height: 1; }
   .cat-fermer:hover { background: var(--ligne); }
@@ -155,6 +156,11 @@
   .cat-siecle li:last-child { border-bottom: 0; }
   .cat-siecle .t { font-weight: 700; } .cat-siecle .a { color: var(--doux); font-size: 16px; }
   .cat-siecle .an { margin-left: auto; color: var(--doux); font-size: 14px; white-space: nowrap; }
+  .cat-siecle li { align-items: center; }
+  .lire { flex: none; display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 10px;
+          border: 2px solid var(--accent); color: var(--accent); font-weight: 700; text-decoration: none; font-size: 16px; }
+  .lire:hover { background: var(--accent); color: #fff; }
+  .lire:focus-visible { outline: 3px solid #e7b04a; outline-offset: 2px; }
   .cat-pied { padding: 14px 26px; border-top: 1px solid var(--ligne); text-align: right; }
   .actions-etape1 { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
   .actions-etape1 .bouton { min-height: 60px; font-size: 18px; padding: 0 22px; }
@@ -220,6 +226,7 @@
     <div class="cat-entete" style="position:relative">
       <h2 id="catTitre">Les livres disponibles</h2>
       <p id="catResume"></p>
+      <p class="cat-astuce">Touchez « Lire » pour feuilleter un livre ici, sans liseuse.</p>
       <div class="cat-puces" id="catPuces"></div>
       <button class="cat-fermer" type="button" id="btnFermerCatalogue" aria-label="Fermer">×</button>
     </div>
@@ -459,7 +466,8 @@ function remplirCatalogue() {
     const liste = c.livres.filter((l) => l.siecle === s);
     return `<section class="cat-siecle" id="cat-${s}"><h3>${echapper(lib)} <span class="a">· ${pluriel(liste.length, "livre")}</span></h3><ul>` +
       liste.map((l) => `<li><span><span class="t">${echapper(l.titre)}</span><br><span class="a">${echapper(l.auteur)}</span></span>` +
-        `<span class="an">${echapper(l.annee)}</span></li>`).join("") + "</ul></section>";
+        `<span class="an">${echapper(l.annee)}</span>` +
+        `<a class="lire" href="lecteur.html?livre=${encodeURIComponent(decodeURIComponent(l.epub))}" aria-label="Lire ${echapper(l.titre)}">Lire</a></li>`).join("") + "</ul></section>";
   }).join("");
 }
 function ouvrirCatalogue() { remplirCatalogue(); $("catCorps").scrollTop = 0; ouvrirDialogue($("modalCatalogue")); }

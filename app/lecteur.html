@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lecteur — Classiques libres</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
+<style>
+  :root {
+    --fond: #f6f1e7; --barre: #fffdf8; --encre: #1f2a37; --doux: #5d6672; --ligne: #e3dccd;
+    --accent: #8a2f3c; --survol: #efe8da; --page: #fffdf8;
+  }
+  :root[data-theme="sepia"] { --fond: #efe4cf; --barre: #f7eedd; --encre: #3b2f22; --doux: #6e5c46; --ligne: #dccbac; --survol: #eadbbf; --page: #f7eedd; }
+  :root[data-theme="sombre"] { --fond: #15191f; --barre: #1d232b; --encre: #e7e2d8; --doux: #9aa3ad; --ligne: #2e3640; --accent: #e08a96; --survol: #262e38; --page: #1d232b; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--fond); color: var(--encre); font: 16px/1.4 "Source Sans 3", system-ui, sans-serif;
+         display: flex; flex-direction: column; overflow: hidden; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  .icone { width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; display: grid; place-items: center; flex: none; }
+  .icone:hover, .icone[aria-pressed="true"] { background: var(--survol); }
+  .icone svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #e7b04a; outline-offset: 2px; }
+
+  header { display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: var(--barre); border-bottom: 1px solid var(--ligne); flex: none; }
+  header a.icone { color: inherit; text-decoration: none; }
+  .titres { flex: 1; min-width: 0; padding: 0 6px; }
+  .titres b { display: block; font: 700 17px/1.2 Literata, Georgia, serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .titres span { color: var(--doux); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+
+  main { flex: 1; display: flex; min-height: 0; position: relative; }
+  .tourner { width: 56px; flex: none; border: 0; background: transparent; color: var(--doux); display: grid; place-items: center; }
+  .tourner:hover { background: var(--survol); color: var(--encre); }
+  .tourner svg { width: 28px; height: 28px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+  #zone { flex: 1; min-width: 0; margin: 14px 0; background: var(--page); border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.08); position: relative; }
+  #lecture { position: absolute; inset: 0; }
+  .etat { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--doux); font-size: 18px; }
+  .etat.erreur { color: #c0392b; }
+  .etat[hidden] { display: none; }
+
+  footer { display: flex; align-items: center; gap: 14px; padding: 8px 16px; background: var(--barre); border-top: 1px solid var(--ligne); flex: none; font-size: 14px; color: var(--doux); }
+  #chapitre { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #curseur { flex: 2; accent-color: var(--accent); min-width: 80px; }
+  #pourcent { width: 4.5em; text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Panneau latéral (sommaire, recherche) */
+  aside { position: absolute; top: 0; bottom: 0; left: 0; width: min(360px, 88vw); background: var(--barre); border-right: 1px solid var(--ligne);
+          box-shadow: 6px 0 24px rgba(0,0,0,.12); transform: translateX(-105%); transition: transform .2s; z-index: 5; display: flex; flex-direction: column; }
+  aside.ouvert { transform: none; }
+  aside h2 { font: 700 19px Literata, Georgia, serif; margin: 0; padding: 16px 16px 10px; display: flex; align-items: center; justify-content: space-between; }
+  .liste { overflow: auto; flex: 1; padding: 0 8px 16px; }
+  .liste a { display: block; padding: 9px 10px; border-radius: 8px; color: inherit; text-decoration: none; }
+  .liste a:hover, .liste a.actif { background: var(--survol); }
+  .liste a.actif { font-weight: 700; }
+  .liste .n2 { padding-left: 26px; font-size: 15px; } .liste .n3 { padding-left: 42px; font-size: 14px; }
+  .champ { margin: 0 16px 10px; display: flex; gap: 8px; }
+  .champ input { flex: 1; min-height: 44px; border: 2px solid var(--ligne); border-radius: 10px; padding: 0 12px; font: inherit; background: var(--page); color: var(--encre); }
+  .champ button { border: 0; border-radius: 10px; background: var(--accent); color: #fff; padding: 0 14px; font-weight: 700; }
+  .res { font-size: 15px; } .res mark { background: #f3d37a; color: #1f2a37; border-radius: 2px; }
+  .info-recherche { padding: 4px 18px 10px; color: var(--doux); font-size: 14px; }
+
+  /* Réglages */
+  #reglages { position: absolute; top: 8px; right: 10px; width: 280px; background: var(--barre); border: 1px solid var(--ligne); border-radius: 14px;
+              box-shadow: 0 10px 30px rgba(0,0,0,.18); padding: 16px; z-index: 6; display: none; }
+  #reglages.ouvert { display: block; }
+  #reglages h3 { margin: 0 0 8px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--doux); }
+  #reglages section + section { margin-top: 16px; }
+  .rangee { display: flex; gap: 8px; }
+  .rangee button { flex: 1; min-height: 44px; border: 2px solid var(--ligne); border-radius: 10px; background: var(--page); font-weight: 600; }
+  .rangee button[aria-pressed="true"] { border-color: var(--accent); }
+  .pastille-theme { color: #1f2a37; } [data-choix="sepia"] { background: #f7eedd !important; } [data-choix="sombre"] { background: #1d232b !important; color: #e7e2d8; } [data-choix="clair"] { background: #fffdf8 !important; }
+  #taille { min-width: 3.5em; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+
+  /* Mode sans distraction */
+  body.zen header, body.zen footer { display: none; }
+  body.zen #zone { margin: 0; border-radius: 0; box-shadow: none; }
+  #sortieZen { position: fixed; top: 8px; right: 8px; z-index: 9; display: none; background: var(--barre); border: 1px solid var(--ligne); opacity: .6; }
+  body.zen #sortieZen { display: grid; } #sortieZen:hover { opacity: 1; }
+
+  @media (max-width: 640px) {
+    .tourner { display: none; }
+    #zone { margin: 0; border-radius: 0; box-shadow: none; }
+    #chapitre { display: none; }
+    header .masquable { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <a class="icone" href="./" title="Retour aux livres" aria-label="Retour aux livres"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></a>
+  <button class="icone" id="btnSommaire" title="Sommaire" aria-label="Sommaire" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
+  <div class="titres"><b id="titre">Chargement…</b><span id="auteur"></span></div>
+  <button class="icone" id="btnRecherche" title="Rechercher dans le livre" aria-label="Rechercher dans le livre" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+  <button class="icone" id="btnReglages" title="Affichage" aria-label="Réglages d'affichage" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 19l5-14h1l5 14M6 14h7M16 19l2.5-7h.5L21.5 19M17 16.5h4"/></svg></button>
+  <button class="icone masquable" id="btnZen" title="Lecture sans distraction" aria-label="Lecture sans distraction"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  <a class="icone masquable" id="lienTelecharger" title="Télécharger l'EPUB" aria-label="Télécharger l'EPUB" download><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></a>
+</header>
+
+<main>
+  <aside id="panSommaire" aria-label="Sommaire">
+    <h2>Sommaire <button class="icone" data-fermer aria-label="Fermer">✕</button></h2>
+    <nav class="liste" id="sommaire"></nav>
+  </aside>
+  <aside id="panRecherche" aria-label="Recherche">
+    <h2>Rechercher <button class="icone" data-fermer aria-label="Fermer">✕</button></h2>
+    <form class="champ" id="formRecherche"><input id="q" type="search" placeholder="Un mot, un nom…" aria-label="Texte à rechercher"><button>OK</button></form>
+    <div class="info-recherche" id="infoRecherche"></div>
+    <div class="liste res" id="resultats"></div>
+  </aside>
+
+  <div id="reglages" role="dialog" aria-label="Réglages d'affichage">
+    <section><h3>Thème</h3><div class="rangee">
+      <button class="pastille-theme" data-choix="clair">Clair</button>
+      <button class="pastille-theme" data-choix="sepia">Sépia</button>
+      <button class="pastille-theme" data-choix="sombre">Sombre</button></div></section>
+    <section><h3>Taille du texte</h3><div class="rangee">
+      <button id="moins" aria-label="Texte plus petit">A−</button><span id="taille">100 %</span><button id="plus" aria-label="Texte plus grand">A+</button></div></section>
+    <section><h3>Police</h3><div class="rangee">
+      <button data-police="serif" style="font-family:Literata,Georgia,serif">Avec empattements</button>
+      <button data-police="sans">Sans empattements</button></div></section>
+  </div>
+
+  <button class="tourner" id="prec" aria-label="Page précédente"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <div id="zone"><div id="lecture"></div><div class="etat" id="etat">Ouverture du livre…</div></div>
+  <button class="tourner" id="suiv" aria-label="Page suivante"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+</main>
+
+<footer>
+  <span id="chapitre"></span>
+  <input type="range" id="curseur" min="0" max="1000" value="0" disabled aria-label="Position dans le livre">
+  <span id="pourcent">…</span>
+</footer>
+<button class="icone" id="sortieZen" aria-label="Quitter la lecture sans distraction"><svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const chemin = params.get("livre") || "";
+const cle = "lecteur:" + chemin;
+const lire = (k, d) => { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } };
+const ecrire = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* navigation privée */ } };
+const echapper = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const prefs = Object.assign({ theme: "clair", taille: 100, police: "serif" }, lire("lecteur:prefs", {}));
+
+// « !important » : certains EPUB imposent leurs propres couleurs
+const theme = (texte, fond, lien) => ({
+  "html, body": { color: texte + " !important", background: fond + " !important" },
+  "body *": { color: "inherit !important", "background-color": "transparent !important", "border-color": "currentColor !important" },
+  "a, a *": { color: lien + " !important" },
+  img: { "background-color": "#fff !important" },
+});
+const THEMES = {
+  clair:  theme("#1f2a37", "#fffdf8", "#8a2f3c"),
+  sepia:  theme("#3b2f22", "#f7eedd", "#8a2f3c"),
+  sombre: theme("#e7e2d8", "#1d232b", "#e08a96"),
+};
+let book, rendition, locationsPretes = false;
+
+function erreur(msg) {
+  $("etat").textContent = msg; $("etat").classList.add("erreur"); $("etat").hidden = false;
+  $("titre").textContent = "Livre introuvable";
+}
+
+// Le livre doit venir de ce site (dossiers epub/ ou kepub/), pour des raisons de sécurité.
+if (!/^(epub|kepub)\/[^?#]+\.epub$/.test(chemin) || chemin.includes("..")) {
+  erreur("Aucun livre à afficher. Revenez à la liste et choisissez « Lire ».");
+} else if (typeof ePub === "undefined") {
+  erreur("Le lecteur n'a pas pu se charger. Vérifiez la connexion Internet puis rechargez la page.");
+} else {
+  ouvrir();
+}
+
+async function ouvrir() {
+  $("lienTelecharger").href = chemin;
+  // Titre et auteur depuis le catalogue (plus fiables que les métadonnées du fichier)
+  try {
+    const cat = await (await fetch("catalogue.json")).json();
+    const l = cat.livres.find((x) => decodeURIComponent(x.epub) === chemin || decodeURIComponent(x.kepub || "") === chemin);
+    if (l) { $("titre").textContent = l.titre; $("auteur").textContent = l.auteur + " · " + l.annee; document.title = l.titre + " — Classiques libres"; }
+  } catch { /* le titre viendra du fichier */ }
+
+  try {
+    const r = await fetch(chemin);
+    if (!r.ok) throw new Error(r.status);
+    book = ePub(await r.arrayBuffer());
+  } catch (e) { erreur("Impossible de télécharger ce livre (" + e.message + ")."); return; }
+
+  rendition = book.renderTo("lecture", { width: "100%", height: "100%", flow: "paginated", spread: "auto", minSpreadWidth: 900, allowScriptedContent: false });
+  Object.entries(THEMES).forEach(([nom, css]) => rendition.themes.register(nom, css));
+  appliquerPrefs();
+
+  const position = lire(cle, null);
+  try { await rendition.display(position || undefined); }
+  catch { await rendition.display(); }
+  $("etat").hidden = true;
+
+  book.loaded.metadata.then((m) => {
+    if ($("titre").textContent === "Chargement…") { $("titre").textContent = m.title || "Sans titre"; $("auteur").textContent = m.creator || ""; document.title = (m.title || "Livre") + " — Classiques libres"; }
+  });
+  book.loaded.navigation.then((nav) => construireSommaire(nav.toc));
+
+  rendition.on("relocated", (loc) => {
+    ecrire(cle, loc.start.cfi);
+    majPied(loc);
+  });
+  rendition.on("keyup", clavier);
+  rendition.on("touchstart", (e) => { glisse = e.changedTouches[0].screenX; });
+  rendition.on("touchend", (e) => { const dx = e.changedTouches[0].screenX - glisse; if (Math.abs(dx) > 50) dx < 0 ? rendition.next() : rendition.prev(); });
+
+  // Pourcentages : calculés en arrière-plan (peut prendre quelques secondes sur les gros livres)
+  book.ready.then(() => book.locations.generate(1200)).then(() => {
+    locationsPretes = true; $("curseur").disabled = false;
+    const loc = rendition.currentLocation(); if (loc && loc.start) majPied(loc);
+  });
+}
+
+let glisse = 0;
+function majPied(loc) {
+  const item = book.navigation && loc.start.href ? trouverChapitre(loc.start.href) : null;
+  $("chapitre").textContent = item ? item.label.trim() : "";
+  document.querySelectorAll("#sommaire a").forEach((a) => a.classList.toggle("actif", item && a.dataset.href === item.href));
+  if (locationsPretes) {
+    const p = book.locations.percentageFromCfi(loc.start.cfi);
+    $("pourcent").textContent = Math.round(p * 100) + " %";
+    $("curseur").value = Math.round(p * 1000);
+  }
+}
+function trouverChapitre(href) {
+  const base = href.split("#")[0];
+  let trouve = null;
+  (function parcourir(items) { for (const i of items) { if (i.href.split("#")[0].endsWith(base) || base.endsWith(i.href.split("#")[0])) trouve = trouve || i; if (i.subitems) parcourir(i.subitems); } })(book.navigation.toc);
+  return trouve;
+}
+
+function construireSommaire(toc) {
+  const html = [];
+  (function ajouter(items, niveau) {
+    for (const i of items) {
+      html.push(`<a href="#" class="n${Math.min(niveau, 3)}" data-href="${echapper(i.href)}">${echapper(i.label.trim())}</a>`);
+      if (i.subitems && i.subitems.length) ajouter(i.subitems, niveau + 1);
+    }
+  })(toc, 1);
+  $("sommaire").innerHTML = html.join("") || '<p class="info-recherche">Ce livre n\'a pas de sommaire.</p>';
+}
+
+/* ---------- Réglages ---------- */
+function appliquerPrefs() {
+  document.documentElement.dataset.theme = prefs.theme;
+  if (rendition) {
+    rendition.themes.select(prefs.theme);
+    rendition.themes.fontSize(prefs.taille + "%");
+    rendition.themes.font(prefs.police === "serif" ? "Literata, Georgia, serif" : "'Source Sans 3', Helvetica, Arial, sans-serif");
+  }
+  $("taille").textContent = prefs.taille + " %";
+  document.querySelectorAll("[data-choix]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.choix === prefs.theme));
+  document.querySelectorAll("[data-police]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.police === prefs.police));
+  ecrire("lecteur:prefs", prefs);
+}
+document.querySelectorAll("[data-choix]").forEach((b) => b.addEventListener("click", () => { prefs.theme = b.dataset.choix; appliquerPrefs(); }));
+document.querySelectorAll("[data-police]").forEach((b) => b.addEventListener("click", () => { prefs.police = b.dataset.police; appliquerPrefs(); }));
+$("plus").addEventListener("click", () => { prefs.taille = Math.min(200, prefs.taille + 10); appliquerPrefs(); });
+$("moins").addEventListener("click", () => { prefs.taille = Math.max(70, prefs.taille - 10); appliquerPrefs(); });
+
+/* ---------- Panneaux ---------- */
+function basculer(id, bouton) {
+  const ouvert = !$(id).classList.contains("ouvert");
+  ["panSommaire", "panRecherche"].forEach((p) => $(p).classList.remove("ouvert"));
+  $("reglages").classList.remove("ouvert");
+  ["btnSommaire", "btnRecherche", "btnReglages"].forEach((b) => $(b).setAttribute("aria-pressed", "false"));
+  if (ouvert) { $(id).classList.add("ouvert"); bouton.setAttribute("aria-pressed", "true"); }
+  return ouvert;
+}
+$("btnSommaire").addEventListener("click", (e) => basculer("panSommaire", e.currentTarget));
+$("btnRecherche").addEventListener("click", (e) => { if (basculer("panRecherche", e.currentTarget)) setTimeout(() => $("q").focus(), 150); });
+$("btnReglages").addEventListener("click", (e) => basculer("reglages", e.currentTarget));
+document.querySelectorAll("[data-fermer]").forEach((b) => b.addEventListener("click", () => basculer("__aucun", b)));
+$("sommaire").addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-href]"); if (!a) return;
+  e.preventDefault(); rendition.display(a.dataset.href);
+  if (innerWidth < 900) basculer("__aucun", a);
+});
+
+/* ---------- Recherche ---------- */
+$("formRecherche").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const q = $("q").value.trim(); if (q.length < 2 || !book) return;
+  $("resultats").innerHTML = ""; $("infoRecherche").textContent = "Recherche en cours…";
+  const trouves = [];
+  for (const item of book.spine.spineItems) {
+    try {
+      await item.load(book.load.bind(book));
+      trouves.push(...item.find(q).map((r) => ({ ...r, href: item.href })));
+      item.unload();
+    } catch { /* section illisible : on continue */ }
+    if (trouves.length >= 200) break;
+  }
+  $("infoRecherche").textContent = trouves.length ? `${trouves.length >= 200 ? "Plus de 200" : trouves.length} résultat${trouves.length > 1 ? "s" : ""}` : "Aucun résultat.";
+  const motif = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+  $("resultats").innerHTML = trouves.slice(0, 200).map((r) =>
+    `<a href="#" data-cfi="${echapper(r.cfi)}">${echapper(r.excerpt.trim().replace(/^\.+|\.+$/g, "").trim()).replace(motif, (m) => `<mark>${m}</mark>`)}…</a>`).join("");
+});
+$("resultats").addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-cfi]"); if (!a) return;
+  e.preventDefault();
+  rendition.display(a.dataset.cfi).then(() => { try { rendition.annotations.remove(window.__surligne, "highlight"); } catch {} window.__surligne = a.dataset.cfi; rendition.annotations.highlight(a.dataset.cfi, {}, null, "", { fill: "#f3d37a", "fill-opacity": "0.5" }); });
+  if (innerWidth < 900) basculer("__aucun", a);
+});
+
+/* ---------- Navigation ---------- */
+function clavier(e) {
+  if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  if (!rendition) return;
+  if (e.key === "ArrowRight" || e.key === "PageDown") rendition.next();
+  if (e.key === "ArrowLeft" || e.key === "PageUp") rendition.prev();
+  if (e.key === "Escape") { document.body.classList.remove("zen"); basculer("__aucun", $("btnSommaire")); }
+}
+document.addEventListener("keyup", clavier);
+$("prec").addEventListener("click", () => rendition && rendition.prev());
+$("suiv").addEventListener("click", () => rendition && rendition.next());
+$("curseur").addEventListener("change", (e) => { if (locationsPretes) rendition.display(book.locations.cfiFromPercentage(e.target.value / 1000)); });
+$("btnZen").addEventListener("click", () => document.body.classList.add("zen"));
+$("sortieZen").addEventListener("click", () => document.body.classList.remove("zen"));
+let delai; addEventListener("resize", () => { clearTimeout(delai); delai = setTimeout(() => rendition && rendition.resize(), 200); });
+
+appliquerPrefs();
+</script>
+</body>
+</html>
