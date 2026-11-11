@@ -127,18 +127,11 @@ licence : certains sites autorisent la redistribution seulement sans modificatio
 ou sans usage commercial. Indiquez le lien direct dans la colonne `url` de
 `catalogue.csv` pour que la source apparaisse dans `SOURCES.md`.
 
-## Droits
+## Licences
 
-- Les œuvres sont dans le domaine public en France (auteurs morts depuis plus de 70 ans).
-- Les EPUB de la **BNR** peuvent être utilisés librement, **sans modification**, en indiquant
-  la source ; leur partie éditoriale (notes, présentation, maquette) ne peut pas servir à
-  des fins commerciales sans l'accord de l'association Les Bourlapapey. Ils sont diffusés
-  tels quels, avec leur source dans `SOURCES.md`.
-- Les EPUB issus de **Wikisource** sont sous licence CC BY-SA 4.0 : la source est indiquée
-  dans `SOURCES.md` et dans chaque fichier.
-- GitHub étant hébergé aux États-Unis, le catalogue se limite aux œuvres publiées
-  avant 1931, libres aussi là-bas.
-- Ne pas ajouter de traduction ou de version modernisée récente : elle serait protégée.
+- **Code** (scripts et webapp) : © Département de la Gironde — biblio.gironde, sous licence [GNU Affero General Public License v3.0](LICENSE) ou ultérieure (AGPL-3.0-or-later). Vous pouvez le réutiliser et le modifier ; toute version modifiée, redistribuée ou mise en ligne, doit être publiée sous la même licence, avec son code source.
+- **Catalogue (`catalogue.csv`) et textes de présentation** : [Licence Ouverte Etalab 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/), réutilisation libre, y compris commerciale, avec mention de la source « biblio.gironde ».
+- **Livres EPUB** (`epub/`) : œuvres du domaine public, dans les éditions de la Bibliothèque numérique romande et de Wikisource. Ils ne sont pas couverts par ces licences : la licence de chaque source et la provenance de chaque titre sont dans [`SOURCES.md`](SOURCES.md).
 
 ## Activer GitHub Pages (une seule fois)
 
